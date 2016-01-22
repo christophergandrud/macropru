@@ -61,35 +61,39 @@ t8 <- glm(any_tighten ~ finstress_qt_mean + cbi + inflation +
           , data = dem, family = 'binomial')
 
 # Simple logistic regressions loosening -------
-l1 <- glm(any_loosen ~ fiscal_trans_gfs + finstress_qt_mean +
+l1 <- glm(any_loosen ~ cumsum_any_tighten + fiscal_trans_gfs + finstress_qt_mean +
               country + year + quarter
           , data = dem, family = 'binomial')
 
-l2 <- glm(any_loosen ~ fiscal_trans_gfs + executive_election_4qt +
+l2 <- glm(any_loosen ~ cumsum_any_tighten + fiscal_trans_gfs + executive_election_4qt +
               country + year + quarter
           , data = dem, family = 'binomial')
 
-l3 <- glm(any_loosen ~ fiscal_trans_gfs + executive_election_4qt + cbi +
+l3 <- glm(any_loosen ~ cumsum_any_tighten + fiscal_trans_gfs + executive_election_4qt + cbi +
               country + year + quarter
           , data = dem, family = 'binomial')
 
-l4 <- glm(any_loosen ~ fiscal_trans_gfs + executive_election_4qt + execrlc +
+l4 <- glm(any_loosen ~ cumsum_any_tighten + fiscal_trans_gfs + executive_election_4qt + execrlc +
               country + year + quarter
           , data = dem, family = 'binomial')
 
-l5 <- glm(any_loosen ~ fiscal_trans_gfs + executive_election_4qt + domestic_credit_change +
+l5 <- glm(any_loosen ~ cumsum_any_tighten + fiscal_trans_gfs + 
+              executive_election_4qt + domestic_credit_change +
               country + year + quarter
           , data = dem, family = 'binomial')
 
-l6 <- glm(any_loosen ~ fiscal_trans_gfs + executive_election_4qt + gdp_growth +
+l6 <- glm(any_loosen ~ cumsum_any_tighten + fiscal_trans_gfs + 
+              executive_election_4qt + gdp_growth +
               country + year + quarter
           , data = dem, family = 'binomial')
 
-l7 <- glm(any_loosen ~ fiscal_trans_gfs + executive_election_4qt + inflation +
+l7 <- glm(any_loosen ~ cumsum_any_tighten + fiscal_trans_gfs + 
+              executive_election_4qt + inflation +
               country + year + quarter
           , data = dem, family = 'binomial')
 
-l8 <- glm(any_loosen ~ finstress_qt_mean + executive_election_4qt +
+l8 <- glm(any_loosen ~ cumsum_any_tighten + finstress_qt_mean + 
+              executive_election_4qt +
               country + year + quarter
           , data = dem, family = 'binomial')
 

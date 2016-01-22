@@ -149,9 +149,6 @@ comb <- merge(comb, cbi, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, wdi, by = c('country', 'year'), all.x = T)
 
 
-
-
-
 # Clean up --------------
 # Capital cumulative sum
 comb <- comb %>% arrange(country, year_quarter) %>% group_by(country) %>%
@@ -190,6 +187,10 @@ comb$any_loosen <- 0
 for (i in loosen) {
     comb$any_loosen[comb[, i] == 1] <- 1
 }
+
+# Cumulative tightening
+comb <- comb %>% arrange(country, year_quarter) %>% group_by(country) %>%
+    mutate(cumsum_any_tighten = cumsum(any_tighten))
 
 comb <- comb %>% MoveFront(c("country", "countrycode", "year",
                              "year_quarter", "quarter", "election_date", 'polity2', 
