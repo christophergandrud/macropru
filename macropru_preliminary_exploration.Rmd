@@ -1,7 +1,7 @@
 ---
 title: "When Do Regulators Lean Against the Wind?: The Political Economy of Implementing Macroprudential Regulatory Tools: Some very preliminary results"
 author: "Jeffrey Chwieroth and Christopher Gandrud"
-date: "22 January 2016"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: pdf_document
 bibliography: main.bib
 ---
@@ -47,7 +47,7 @@ Finally, we examined a number of economic indicators including the **inflation r
 
 Because we are primarily interested in how politicians with electoral incentives choose macro-prudential policies, in the following regressions we focus on county-years with a Polity 2 score greater than five [@Marshall2009 updated through 2012]. This is the threshold at which the index's authors decide whether a country is democratic or not.
 
-The following tables are from logistic regressions with country, year, and quarter fixed effects. Additionally, we may expect that countries that had previously tightened have more room to loosen. As such we include a variable of **cumulative observed macroprudential policy tightening**. This variable simply sums the number of observed instances of tightening by a country up to and including the present quarter. Results were substantively the same regardless of whether or not we include this variable.[^cum_include]
+The following tables are from logistic regressions with country, year, and quarter fixed effects. Additionally, we may expect that countries that a country that has already tightened has a higher propensity to tighten again and having previously tightened is necessary to be able to loosen. As such we include a variable of **cumulative observed macroprudential policy tightening**. This variable simply sums the number of observed instances of tightening by a country up to, but not including the present quarter. Results were largely substantively the same regardless of whether or not we include this variable.[^cum_include]
 
 ```{r echo=FALSE, results='asis'}
 stargazer(t1, t2, t3, t4, t5, t6, t7, t8,
@@ -56,7 +56,8 @@ stargazer(t1, t2, t3, t4, t5, t6, t7, t8,
           dep.var.labels.include = FALSE,
           omit = c('country*', 'year*', 'quarter*'),
           font.size = 'tiny',
-         covariate.labels = c('FinStress', 'Election', 'CBI', 'Fiscal Transp.',
+         covariate.labels = c('Cumulative Tightening', 'FinStress', 'Election', 
+                              'CBI', 'Fiscal Transp.',
                                'Economic Ideology',
                                'GDP Growth', 'Domestic Credit Growth', 'Inflation', 
                                'FinStress*CBI', 'Constant'),

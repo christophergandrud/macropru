@@ -30,6 +30,13 @@ boe$year_quarter <- sprintf("%s.%s", boe$year, boe$quarter) %>%
 
 boe <- MoveFront(boe, c("country", "countrycode", "year_quarter", "quarter"))
 
+# Macropru governance
+## p. 16 https://www.imf.org/external/pubs/ft/wp/2013/wp13166.pdf
+source('data/raw/macropru_governance_indices.R')
+
+macro_gov$country <- countrycode(macro_gov$country, origin = 'country.name',
+                                 destination = 'country.name')
+
 # Election timing data --------
 ## From http://hyde.research.yale.edu/nelda
 elections <- import("data/raw/NELDA.xls", col_names = F)
@@ -62,7 +69,16 @@ elections$value <- 1
 elections <- FindDups(elections, Vars = c("country", "election_date", 
                                           "X7"), NotDups = T)
 
-elections <- elections %>% spread(X7, value)
+elections <- elections %>% spread(X7, value) %>% arrange(country, election_date)
+
+# Inequality ---------
+load('data/raw/swiidV4_0.RData') 
+
+swiid$country <- countrycode(swiid$country, origin = 'country.name', 
+                               destination = 'country.name')
+
+swiid <- swiid[, c('country', 'year', '_1_gini_net', '_1_gini_market', 
+                   '_1_redist', '_1_share1')]
 
 # FinStress -----
 URL <- 'https://raw.githubusercontent.com/christophergandrud/EIUCrisesMeasure/master/data/FinStress.csv'
@@ -83,7 +99,7 @@ finstress_index <- finstress_index %>% select(country, year_quarter,
 polity <- PolityGet(vars = c("polity2"))
 polity$country <- countrycode(polity$country, origin = 'country.name',
                               destination = 'country.name')
-polity <- polity %>% select(-iso2c)
+polity <- polity %>% select(-iso2c, -standardized_country)
 
 # DPI ---------
 dpi <- DpiGet(vars = c("execrlc"))
@@ -140,6 +156,8 @@ wdi <- change(wdi, Var = 'domestic_credit', GroupVar = 'country',
 # Combine ------
 comb <- merge(elections, boe, by = c("country", "year_quarter"), 
               all.y = T)
+comb <- merge(comb, macro_gov, by = 'country', all.x = T)
+comb <- merge(comb, swiid, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, polity, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, finstress_index, by = c('country', 'year_quarter'), 
               all.x = T)
@@ -192,9 +210,14 @@ for (i in loosen) {
 comb <- comb %>% arrange(country, year_quarter) %>% group_by(country) %>%
     mutate(cumsum_any_tighten = cumsum(any_tighten))
 
+comb <- slide(comb, Var = 'cumsum_any_tighten', GroupVar = 'country', 
+              TimeVar = 'year_quarter', NewVar = 'lag_cumsum_any_tighten')
+
 comb <- comb %>% MoveFront(c("country", "countrycode", "year",
                              "year_quarter", "quarter", "election_date", 'polity2', 
                              'finstress_qt_mean'))
+
+comb <- comb %>% select(-standardized_country)
 
 # Export -----------
 export(comb, file = 'data/main_combined.csv')
