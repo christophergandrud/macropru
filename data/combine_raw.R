@@ -72,6 +72,12 @@ elections <- FindDups(elections, Vars = c("country", "election_date",
 
 elections <- elections %>% spread(X7, value) %>% arrange(country, election_date)
 
+exec_election <- elections %>% select(country, year_quarter, Executive)
+exec_election <- exec_election %>% DropNA('Executive')
+exec_election <- exec_election %>% FindDups(c('country', 'year_quarter'), 
+                                            NotDups = T)
+
+
 # Inequality ---------
 load('data/raw/swiidV4_0.RData') 
 
@@ -146,7 +152,7 @@ wdi <- wdi %>% rename(gdp_growth = NY.GDP.MKTP.KD.ZG) %>%
     rename(gini = SI.POV.GINI) %>% 
     rename(domestic_credit = FS.AST.DOMS.GD.ZS)
 
-wdi$country <- countrycode(wdi$country, origin = 'country.name',
+wdi$country <- countrycode(wdi$iso2c, origin = 'iso2c',
                            destination = 'country.name')
 wdi <- wdi %>% DropNA('country')
 
@@ -179,7 +185,7 @@ bis <- bis %>% DropNA('bis_housing_change')
 
 
 # Combine ------
-comb <- merge(elections, boe, by = c("country", "year_quarter"), 
+comb <- merge(exec_election, boe, by = c("country", "year_quarter"), 
               all.y = T)
 comb <- merge(comb, macro_gov, by = 'country', all.x = T)
 comb <- merge(comb, swiid, by = c('country', 'year'), all.x = T)
@@ -189,9 +195,10 @@ comb <- merge(comb, finstress_index, by = c('country', 'year_quarter'),
 comb <- merge(comb, dpi, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, fiscal_trans, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, cbi, by = c('country', 'year'), all.x = T)
-comb <- merge(comb, wdi, by = c('country', 'year'), all.x = T)
-comb <- merge(comb, bis, by = c('country', 'year_quarter'), all.x = T)
-
+comb <- dMerge(comb, bis, by = c('country', 'year_quarter'), all = T)
+comb <- dMerge(comb, wdi, by = c('country', 'year'), all.x = T)
+comb <- comb %>% arrange(country, year_quarter)
+FindDups(comb, c('country', 'year_quarter'))
 
 # Clean up --------------
 # Capital cumulative sum
@@ -243,7 +250,7 @@ comb <- comb %>% MoveFront(c("country", "countrycode", "year",
                              "year_quarter", "quarter", "election_date", 'polity2', 
                              'finstress_qt_mean'))
 
-comb <- comb %>% select(-standardized_country)
+comb <- comb %>% select(-standardized_country, -countryname)
 
 # Export -----------
 export(comb, file = 'data/main_combined.csv')

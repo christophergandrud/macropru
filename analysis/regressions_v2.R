@@ -8,6 +8,7 @@
 library(rio)
 library(repmis)
 library(dplyr)
+library(DataCombine)
 #library(Zelig)
 
 # Set working directory
@@ -27,6 +28,8 @@ main$executive_election_4qt <- as.factor(main$executive_election_4qt)
 # Only democracies ------
 dem <- main %>% filter(polity2 > 5)
 
+dem_bis_sub <- dem %>% DropNA('bis_housing_change')
+
 # Simple logistic regressions tightening --------
 t1 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean + 
               bis_housing_change +
@@ -34,7 +37,7 @@ t1 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean +
               country + year + quarter
           , data = dem, family = 'binomial')
 
-t2 <- glm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + finstress_qt_mean*cbi +
+t2 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean*cbi + bis_housing_change +
               country + year + quarter
           , data = dem, family = 'binomial')
 
@@ -47,7 +50,7 @@ t4 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean + cbi +
               country + year + quarter
           , data = dem, family = 'binomial')
 
-t5 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean + cbi +  fiscal_trans_gfs +
+t5 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean + cbi +  fiscal_trans_gfs + bis_housing_change +
               country + year + quarter
           , data = dem, family = 'binomial')
 
@@ -64,7 +67,7 @@ t8 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean + cbi + infla
           , data = dem, family = 'binomial')
 
 # Simple logistic regressions loosening -------
-l1 <- glm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs + finstress_qt_mean +
+l1 <- glm(any_loosen ~ lag_cumsum_any_tighten + bis_housing_change +
               country + year + quarter
           , data = dem, family = 'binomial')
 
