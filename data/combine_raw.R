@@ -12,6 +12,7 @@ library(lubridate)
 library(countrycode)
 library(DataCombine)
 library(tidyr)
+library(stringr)
 library(psData)
 library(WDI)
 
@@ -153,6 +154,30 @@ wdi <- wdi %>% select(-iso2c)
 wdi <- change(wdi, Var = 'domestic_credit', GroupVar = 'country', 
                   NewVar = 'domestic_credit_change')
 
+# BIS Housing price change -----------
+## Downloaded from http://www.bis.org/statistics/pp_selected.htm
+bis <- import('data/raw/full_BIS_SELECTED_PP_csv.csv')
+
+# Keep year-on-year real quarterly housing price change (%)
+bis <- bis %>% grepl.sub(pattern = 'R:Real', Var = 'Value') %>%
+        grepl.sub(pattern = '771:Year-on-year changes, in per cent', 
+                  Var = 'Unit of measure') %>%
+        select(-Frequency, -Value, -`Unit of measure`, -`Time Period`)
+
+bis_col <- str_split_fixed(bis$`Reference area`, n = 2, pattern = ':') %>%
+            as.data.frame %>% setNames(c('iso2c', 'country'))
+bis <- cbind(bis_col, bis) %>% select(-iso2c, -`Reference area`)
+bis$country <- countrycode(bis$country, origin = 'country.name',
+                           destination = 'country.name')
+bis <- bis %>% DropNA('country')
+
+bis <- bis %>% gather(year_quarter, bis_housing_change, 2:ncol(bis))
+bis$year_quarter <- gsub('-Q', '.', bis$year_quarter) %>% as.numeric
+bis$bis_housing_change <- bis$bis_housing_change %>% as.numeric
+bis <- bis %>% arrange(country, year_quarter)
+bis <- bis %>% DropNA('bis_housing_change')
+
+
 # Combine ------
 comb <- merge(elections, boe, by = c("country", "year_quarter"), 
               all.y = T)
@@ -165,6 +190,7 @@ comb <- merge(comb, dpi, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, fiscal_trans, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, cbi, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, wdi, by = c('country', 'year'), all.x = T)
+comb <- merge(comb, bis, by = c('country', 'year_quarter'), all.x = T)
 
 
 # Clean up --------------
