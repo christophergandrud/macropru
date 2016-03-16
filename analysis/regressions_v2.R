@@ -10,6 +10,7 @@ library(repmis)
 library(dplyr)
 library(DataCombine)
 library(arm)
+library(texreg)
 #library(Zelig)
 
 # Set working directory
@@ -63,50 +64,65 @@ t6 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    factor(country) + factor(quarter)
                , data = dem, family = binomial(link = 'logit'))
 
-library(texreg)
-screenreg(list(t1, t2, t3, t4, t5, t6),
+
+# Create display table for tightening ---------
+est_tighten <- list(t1, t2, t3, t4, t5, t6)
+
+screenreg(est_tighten,
        omit.coef = 'factor')
+
+texreg(est_tighten,
+       omit.coef = 'factor',
+       table = FALSE,
+       file = 'tables/tightening_results.tex')
 
 # Simple logistic regressions loosening -------
 l1 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    finstress_qt_mean + bis_housing_change +
-                   factor(country) + factor(year) + factor(quarter)
+                   factor(country) + factor(quarter)
           , data = dem, family = binomial(link = 'logit'))
 
 l2 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    `_1_gini_market` + 
-                   factor(country) + factor(year) + factor(quarter)
+                   factor(country) + factor(quarter)
           , data = dem, family = binomial(link = 'logit'))
 
 l3 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
-                   fiscal_trans_gfs + 
-                   executive_election_4qt + cbi +
+                   cbi +
+                   factor(country) + factor(quarter)
+               , data = dem, family = binomial(link = 'logit'))
+
+
+l4 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   cbi +
+                   execrlc + executive_election_4qt +
               factor(country) + factor(quarter)
           , data = dem, family = binomial(link = 'logit'))
 
-l4 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs + executive_election_4qt + execrlc +
-              country + year + quarter
-          , data = dem, family = binomial(link = 'logit'))
+l5 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   cbi +
+                   fiscal_trans_gfs +
+                   factor(country) + factor(quarter)
+               , data = dem, family = binomial(link = 'logit'))
 
-l5 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs +
-              executive_election_4qt + domestic_credit_change +
-              country + year + quarter
-          , data = dem, family = binomial(link = 'logit'))
+l6 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   cbi +
+                   domestic_credit_change +
+                   factor(country) + factor(quarter)
+               , data = dem, family = binomial(link = 'logit'))
 
-l6 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs +
-              executive_election_4qt + gdp_growth +
-              country + year + quarter
-          , data = dem, family = binomial(link = 'logit'))
+# Create display table for loosening ---------
+est_loosen <- list(l1, l2, l3, l4, l5, l6)
 
-l7 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs +
-              executive_election_4qt + inflation +
-              country + year + quarter
-          , data = dem, family = binomial(link = 'logit'))
+screenreg(est_loosen,
+          omit.coef = 'factor')
 
-l8 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + finstress_qt_mean +
-              executive_election_4qt +
-              country + year + quarter
-          , data = dem, family = binomial(link = 'logit'))
+texreg(est_loosen,
+       omit.coef = 'factor',
+       table = FALSE,
+       file = 'tables/loosen_results.tex')
+
+
 
 # Rare logistic Regression
 #r_t3 <- zelig(any_tighten ~ finstress_qt_mean + cbi +

@@ -41,14 +41,12 @@ dem_cumsum <- FindDups(dem_cumsum, c('country', 'year', 'policy_type'),
 
 dem_cumsum$policy_type[dem_cumsum$policy_type == 'cumsum_any_loosen'] <- 'Loosen'
 dem_cumsum$policy_type[dem_cumsum$policy_type == 'cumsum_any_tighten'] <- 'Tighten'
-    
-x = factor(x,levels(x)[c(4,5,1:3)])
 
 dem_cumsum$policy_type <- factor(dem_cumsum$policy_type, 
                                  levels(factor(dem_cumsum$policy_type))[c(2, 1)])
 
 # Plot cumulative tightening by democratic country
-ggplot(dem_cumsum, aes(year, cum_sum, colour = policy_type,
+plot_mpr <- ggplot(dem_cumsum, aes(year, cum_sum, colour = policy_type,
                        linetype = policy_type)) +
     geom_line() +
     facet_wrap(~ country) +
@@ -57,3 +55,6 @@ ggplot(dem_cumsum, aes(year, cum_sum, colour = policy_type,
     scale_x_continuous(breaks = c(2000, 2005, 2010)) +
     xlab('') + ylab('Cumulative Sum (from 2000)\n') +
     theme_bw()
+
+ggsave(plot_mpr, file = 'figures/cumsum_mpr.pdf', width = 14, height = 8.7)
+

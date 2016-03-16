@@ -2,6 +2,9 @@
 title: "When Do Regulators Lean Against the Wind?: The Political Economy of Implementing Macro-prudential Regulatory Tools: Some very preliminary results"
 author: "Jeffrey Chwieroth and Christopher Gandrud"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
+header-includes:
+    - \usepackage{setspace}\doublespacing
+    - \usepackage{lscape}
 output: pdf_document
 bibliography: main.bib
 ---
@@ -21,11 +24,24 @@ This document contains **preliminary** results. Comments welcome.[^authors]
 In the aftermath of the global financial crisis, macro-prudential regulatory (MPR) tools, which aim to limit the build-up of systemic risk and the macroeconomic costs of financial instability, have gained widespread attention. An important element of MPR tools involves implementing new counter-cyclical regulatory measures to dampen credit cycles. Yet the political dynamics of MPR tools are complicated in that their implementation involves moving against market and public sentiment during boom periods as well as affecting who can obtain access to financing and who cannot. In this sense, the use of MPR tools can be highly and conspicuously distributional, thus potentially constraining their use and effectiveness. In many cases, the allocation of MPR responsibilities to hitherto independent central banks creates additional concerns about the nature of their accountability relationship with the rest of the political process and the public at large. To shed light on these critical issues, we provide the first cross-national statistical political economy analysis of MPR implementation. Our analysis assesses the relative importance of political credit cycles, institutional demands, and societal demands for credit tightening and easing. \textbf{Preliminary results} from democracies indicate that independent central banks are important for overcoming the political credit cycles that would hamper effective MPR tightening. Conversely, [GET]
 \end{abstract}
 
+\clearpage
+
 # Dependent variables
 
 Our two dependent variables are derived from a new data set of macro-prudential regulatory (MPR) actions created by @dReinhardt2015. Aggregating a number of sources, mostly from IMF staff economists, and supplemented with additional hand-coded incidents, they generated binary quarterly indicators of MPR tightening and loosening for 70 countries between 1990 and 2014. They created dummies for a range of individual MPR instruments including lending standards, reserve requirements, capital regulation, risk weights, underwriting standards, profit distribution, and loan to value ratios.
 
-Given that in the sample the use of some of these policies is rarely observed, we created two summary dummy variables from the @dReinhardt2015 data to use as our dependent variables. One variable captured if a country took an action that @dReinhardt2015 classified as MPR tightening in a given quarter. The other dependent variable captures loosening. These variables equal one for each country-year that any macro-prudential policy was tightened or loosened, respectively, and zero otherwise.
+Given that in the sample the use of some of these policies is rarely observed, we created two summary dummy variables from the @dReinhardt2015 data to use as our dependent variables. One variable captured if a country took an action that @dReinhardt2015 classified as MPR tightening in a given quarter. The other dependent variable captures loosening. These variables equal one for each country-year that any macro-prudential policy was tightened or loosened, respectively, and zero otherwise. Figure \ref{describe_cumsum} shows the cumulative sum (from the year 2000) of these policies for each (democratic) country-year in our sample.
+
+\begin{landscape}
+\begin{figure}
+    \caption{Cumulative Decisions to Loosen and Tighten Macro-prudential Regulatory Policy (from 2000)}
+    \label{describe_cumsum}
+    \begin{center}
+        \includegraphics{figures/cumsum_mpr.pdf}
+    \end{center}
+
+\end{figure}
+\end{landscape}
 
 # Right-hand variables
 
@@ -34,6 +50,23 @@ We examined how a number of political and economic factors may affect decisions 
 [FILL IN]
 
 
+\begin{table}
+    \caption{Logistic Regression Estimates For Macro-prudential Policy \textbf{Tightening}}
+    \label{tighten_table}
+    \begin{center}
+        \input{tables/tightening_results.tex}
+    \end{center}
+    {\scriptsize{All models include country and quarter fixed effects.}}
+\end{table}
+
+\begin{table}
+    \caption{Logistic Regression Estimates For Macro-prudential Policy \textbf{Loosening}}
+    \label{loosen_table}
+    \begin{center}
+        \input{tables/loosen_results.tex}
+    \end{center}
+    {\scriptsize{All models include country and quarter fixed effects.}}
+\end{table}
 
 # Preliminary results
 
