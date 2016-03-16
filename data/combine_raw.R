@@ -61,6 +61,7 @@ elections$year_quarter <- quarter(elections$election_date, with_year = TRUE)
 #  Other cleaning
 elections <- elections %>% filter(X5 >= 2000)
 elections$X3[elections$X3 == "Democratic Republic of Vietnam"] <- "Vietnam"
+elections$X3[elections$X3 == "German Federal Republic"] <- "Germany"
 elections$country <- countrycode(elections$X3, origin = "country.name", 
                                  destination = "country.name")
 
@@ -72,11 +73,19 @@ elections <- FindDups(elections, Vars = c("country", "election_date",
 
 elections <- elections %>% spread(X7, value) %>% arrange(country, election_date)
 
+# Any election
+any_e <- elections %>% select(country, year_quarter)
+any_e$any_election <- 1
+any_e <- any_e %>% FindDups(c('country', 'year_quarter'), NotDups = T)
+
 exec_election <- elections %>% select(country, year_quarter, Executive)
 exec_election <- exec_election %>% DropNA('Executive')
 exec_election <- exec_election %>% FindDups(c('country', 'year_quarter'), 
                                             NotDups = T)
+exec_election <- exec_election %>% rename(executive_election = Executive)
 
+elections_sub <- merge(any_e, exec_election, by = c('country', 'year_quarter'),
+                       all = T)
 
 # Inequality ---------
 load('data/raw/swiidV4_0.RData') 
@@ -104,7 +113,7 @@ finstress_index <- finstress_index %>% select(country, year_quarter,
 
 # Polity ---------
 polity <- PolityGet(vars = c("polity2"))
-polity$country <- countrycode(polity$country, origin = 'country.name',
+polity$country <- countrycode(polity$iso2c, origin = 'iso2c',
                               destination = 'country.name')
 polity <- polity %>% select(-iso2c, -standardized_country)
 
@@ -134,7 +143,7 @@ fiscal_trans <- fiscal_trans %>% gather(year, fiscal_trans_gfs,
 # Bodea and Hicks CBI -------------
 # Downloaded from http://www.princeton.edu/~rhicks/data.html
 cbi <- foreign::read.dta('data/raw/cb_rh_iodata.dta')
-cbi$country <- countrycode(cbi$countryname, origin = 'country.name',
+cbi$country <- countrycode(cbi$cowcode, origin = 'cown',
                                     destination = 'country.name')
 
 ## No EU
@@ -185,8 +194,8 @@ bis <- bis %>% DropNA('bis_housing_change')
 
 
 # Combine ------
-comb <- merge(exec_election, boe, by = c("country", "year_quarter"), 
-              all.y = T)
+comb <- merge(boe, elections_sub, by = c("country", "year_quarter"), 
+              all.x = T)
 comb <- merge(comb, macro_gov, by = 'country', all.x = T)
 comb <- merge(comb, swiid, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, polity, by = c('country', 'year'), all.x = T)
@@ -210,17 +219,16 @@ for (i in 5:7) {
     comb[, i][is.na(comb[, i])] <- 0
 }
 
-# Any election
-comb$any_election <- 0
-comb$any_election[comb$Executive == 1] <- 1
-comb$`Legislative/Parliamentary`[comb$`Legislative/Parliamentary` == 1] <- 1
+# Clean  elections variable
+comb$any_election[is.na(comb$any_election)] <- 0
+comb$executive_election[is.na(comb$executive_election)] <- 0
 
 # Create 4 qtrs from any election dummy
 comb <- SpreadDummy(comb, Var = 'any_election', GroupVar = 'country',
                     NewVar = 'any_election_4qt', spreadBy = 3)
 
 # Create 4 qtrs from executive election dummy
-comb <- SpreadDummy(comb, Var = 'Executive', GroupVar = 'country',
+comb <- SpreadDummy(comb, Var = 'executive_election', GroupVar = 'country',
                     NewVar = 'executive_election_4qt', spreadBy = 3)
 
 # Any tightening
@@ -247,8 +255,9 @@ comb <- slide(comb, Var = 'cumsum_any_tighten', GroupVar = 'country',
               TimeVar = 'year_quarter', NewVar = 'lag_cumsum_any_tighten')
 
 comb <- comb %>% MoveFront(c("country", "countrycode", "year",
-                             "year_quarter", "quarter", "election_date", 'polity2', 
-                             'finstress_qt_mean'))
+                             "year_quarter", "quarter", "executive_election_4qt", 
+                             "polity2", 
+                             "finstress_qt_mean"))
 
 comb <- comb %>% select(-standardized_country, -countryname)
 

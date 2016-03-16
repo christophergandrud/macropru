@@ -9,6 +9,7 @@ library(rio)
 library(repmis)
 library(dplyr)
 library(DataCombine)
+library(arm)
 #library(Zelig)
 
 # Set working directory
@@ -24,84 +25,88 @@ main$year <- as.factor(main$year)
 main$quarter <- as.factor(main$quarter)
 main$executive_election_4qt <- as.factor(main$executive_election_4qt)
 
+FindDups(main, c('country', 'year_quarter'))
 
 # Only democracies ------
 dem <- main %>% filter(polity2 > 5)
 
-dem_bis_sub <- dem %>% DropNA('bis_housing_change')
+# dem_bis_sub <- dem %>% DropNA('bis_housing_change')
 
 # Simple logistic regressions tightening --------
-t1 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean + 
-              bis_housing_change +
-              executive_election_4qt +
-              country + year + quarter
-          , data = dem, family = 'binomial')
+t1 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   finstress_qt_mean + bis_housing_change +
+                   factor(country) + factor(quarter)
+               , data = dem, family = binomial(link = 'logit'))
 
-t2 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean*cbi + bis_housing_change +
-              country + year + quarter
-          , data = dem, family = 'binomial')
+t2 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   `_1_gini_market` +
+                   factor(country) + factor(quarter)
+               , data = dem, family = binomial(link = 'logit'))
 
-t3 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean*cbi +
-              country + year + quarter
-          , data = dem, family = 'binomial')
+t3 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   cbi +
+                   factor(country) + factor(quarter)
+          , data = dem, family = binomial(link = 'logit'))
 
-t4 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean + cbi + 
-              execrlc +
-              country + year + quarter
-          , data = dem, family = 'binomial')
+t4 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   cbi + execrlc + executive_election_4qt +
+                   factor(country) + factor(quarter)
+               , data = dem, family = binomial(link = 'logit'))
 
-t5 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean + cbi +  fiscal_trans_gfs + bis_housing_change +
-              country + year + quarter
-          , data = dem, family = 'binomial')
+t5 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation + 
+                   cbi + fiscal_trans_gfs +
+                   factor(country) + factor(quarter)
+               , data = dem, family = binomial(link = 'logit'))
 
-t6 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean + cbi + domestic_credit_change +
-              country + year + quarter
-          , data = dem, family = 'binomial')
+t6 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   cbi + domestic_credit_change +
+                   factor(country) + factor(quarter)
+               , data = dem, family = binomial(link = 'logit'))
 
-t7 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean + cbi + gdp_growth +
-              country + year + quarter
-          , data = dem, family = 'binomial')
-
-t8 <- glm(any_tighten ~ lag_cumsum_any_tighten + finstress_qt_mean + cbi + inflation +
-              country + year + quarter
-          , data = dem, family = 'binomial')
+library(texreg)
+screenreg(list(t1, t2, t3, t4, t5, t6),
+       omit.coef = 'factor')
 
 # Simple logistic regressions loosening -------
-l1 <- glm(any_loosen ~ lag_cumsum_any_tighten + bis_housing_change +
-              country + year + quarter
-          , data = dem, family = 'binomial')
+l1 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   finstress_qt_mean + bis_housing_change +
+                   factor(country) + factor(year) + factor(quarter)
+          , data = dem, family = binomial(link = 'logit'))
 
-l2 <- glm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs + executive_election_4qt +
-              country + year + quarter
-          , data = dem, family = 'binomial')
+l2 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   `_1_gini_market` + 
+                   factor(country) + factor(year) + factor(quarter)
+          , data = dem, family = binomial(link = 'logit'))
 
-l3 <- glm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs + executive_election_4qt + cbi +
-              country + year + quarter
-          , data = dem, family = 'binomial')
+l3 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   fiscal_trans_gfs + 
+                   executive_election_4qt + cbi +
+              factor(country) + factor(quarter)
+          , data = dem, family = binomial(link = 'logit'))
 
-l4 <- glm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs + executive_election_4qt + execrlc +
+l4 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs + executive_election_4qt + execrlc +
               country + year + quarter
-          , data = dem, family = 'binomial')
+          , data = dem, family = binomial(link = 'logit'))
 
-l5 <- glm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs + 
+l5 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs +
               executive_election_4qt + domestic_credit_change +
               country + year + quarter
-          , data = dem, family = 'binomial')
+          , data = dem, family = binomial(link = 'logit'))
 
-l6 <- glm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs + 
+l6 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs +
               executive_election_4qt + gdp_growth +
               country + year + quarter
-          , data = dem, family = 'binomial')
+          , data = dem, family = binomial(link = 'logit'))
 
-l7 <- glm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs + 
+l7 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + fiscal_trans_gfs +
               executive_election_4qt + inflation +
               country + year + quarter
-          , data = dem, family = 'binomial')
+          , data = dem, family = binomial(link = 'logit'))
 
-l8 <- glm(any_loosen ~ lag_cumsum_any_tighten + finstress_qt_mean + 
+l8 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + finstress_qt_mean +
               executive_election_4qt +
               country + year + quarter
-          , data = dem, family = 'binomial')
+          , data = dem, family = binomial(link = 'logit'))
 
 # Rare logistic Regression
 #r_t3 <- zelig(any_tighten ~ finstress_qt_mean + cbi +
