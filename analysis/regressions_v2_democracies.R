@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------- #
-# Preliminary Analysis
+# Preliminary Analysis (Democracies)
 # Christopher Gandrud
 # MIT LICENSE
 # ---------------------------------------------------------------------------- #
@@ -66,13 +66,20 @@ t6 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
 
 
 # Create display table for tightening ---------
+var_names <- c('(Intercept)', 'Cumulative Tightening (lag)', 'GDP Growth',
+               'Inflation', 'FinStress', 'Housing price $\\Delta$', 
+               'Gini', 'CBI', 'Executive Ideology', 'Executive Election',
+               'Fiscal Transparency', 'Credit Growth')
+
 est_tighten <- list(t1, t2, t3, t4, t5, t6)
 
-screenreg(est_tighten,
-       omit.coef = 'factor')
+screenreg(est_tighten, 
+       omit.coef = 'factor',
+       custom.coef.names = var_names)
 
 texreg(est_tighten,
        omit.coef = 'factor',
+       custom.coef.names = var_names,
        table = FALSE,
        file = 'tables/tightening_results.tex')
 
@@ -115,10 +122,12 @@ l6 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
 est_loosen <- list(l1, l2, l3, l4, l5, l6)
 
 screenreg(est_loosen,
-          omit.coef = 'factor')
+          omit.coef = 'factor',
+          custom.coef.names = var_names)
 
 texreg(est_loosen,
        omit.coef = 'factor',
+       custom.coef.names = var_names,
        table = FALSE,
        file = 'tables/loosen_results.tex')
 

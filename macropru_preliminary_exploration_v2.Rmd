@@ -9,15 +9,6 @@ output: pdf_document
 bibliography: main.bib
 ---
 
-```{r include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
-library(texreg)
-
-# Run regressions
-source('analysis/regressions_v2.R')
-```
-
 This document contains **preliminary** results. Comments welcome.[^authors]
 
 \begin{abstract}
@@ -30,7 +21,7 @@ In the aftermath of the global financial crisis, macro-prudential regulatory (MP
 
 Our two dependent variables are derived from a new data set of macro-prudential regulatory (MPR) actions created by @dReinhardt2015. Aggregating a number of sources, mostly from IMF staff economists, and supplemented with additional hand-coded incidents, they generated binary quarterly indicators of MPR tightening and loosening for 70 countries between 1990 and 2014. They created dummies for a range of individual MPR instruments including lending standards, reserve requirements, capital regulation, risk weights, underwriting standards, profit distribution, and loan to value ratios.
 
-Given that in the sample the use of some of these policies is rarely observed, we created two summary dummy variables from the @dReinhardt2015 data to use as our dependent variables. One variable captured if a country took an action that @dReinhardt2015 classified as MPR tightening in a given quarter. The other dependent variable captures loosening. These variables equal one for each country-year that any macro-prudential policy was tightened or loosened, respectively, and zero otherwise. Figure \ref{describe_cumsum} shows the cumulative sum (from the year 2000) of these policies for each (democratic) country-year in our sample.
+Given that in the sample the use of some of these policies is rarely observed, we created two summary dummy variables from the @dReinhardt2015 data to use as our dependent variables. One variable captured if a country took an action that @dReinhardt2015 classified as MPR tightening in a given quarter. The other dependent variable captures loosening. These variables equal one for each country-year that any macro-prudential policy was tightened or loosened, respectively, and zero otherwise. Figure \ref{describe_cumsum} shows the cumulative sum (from the year 2000) of these policies for each country-year in our sample.
 
 \begin{landscape}
 \begin{figure}
@@ -47,8 +38,38 @@ Given that in the sample the use of some of these policies is rarely observed, w
 
 We examined how a number of political and economic factors may affect decisions to tighten and loosen macro-prudential policy.
 
-[FILL IN]
+We examined a number of economic indicators from the World Bank's Development Indicators [@worldbank2016].[^wdi] These included the **GDP growth** and **domestic credit growth**. GDP growth is our focus. Macro-prudential policy may be used to calm asset price bubbles, as such we would expect more tightening when growth is high. We may expect that governments would loosen MPR when growth and specifically domestic credit growth is low in order to stimulate the economy. Unfortunately domestic credit growth data is not widely available and so we have a limited ability to directly examine this mechanism. Additionally, from the World Bank Development Indicators, we include **inflation rate** as a control.
 
+Governments may feel a need to tighten macro-prudential policy when asset prices are rising. A key asset prices, often discussed regarding macro-prudential policy, are **residential property prices**. Measuring national-level residential property prices is notoriously difficult [see @bis2014]. We use the 57 national series selected by the Bank of International Settlements [@bis2016] to be as comparable as possible. The indices are at quarterly intervals and in terms of real year-on-year percentage change.
+
+As macro-prudential policy is broadly an attempt to strengthen financial markets, it is important to include the financial market stress policy-makers perceived in real-time. To do this we use the **FinStress** measure from @GandrudHallbergFinStress. They created a real-time indicator of financial market stress for over 180 countries between 2003 and 2011 using a text analysis of *Economist Intelligence Unit* monthly country reports. The value ranges from zero (low stress) to one (high stress). We converted this monthly variable to country-quarter averages.
+
+Elected politicians may find it difficult to tighten macro-prudential policy generally as this may slow economic growth in the short-term, even if it promotes stability in the future. Countries with more **central bank independence** (CBI) suffer less from such a time inconsistency problem. Independent central banks were created under the rational that they would not suffer from the electorally induced time-inconsistency problems in monetary policy-making faced by elected politicians. So, countries with independent central banks may be more likely to tighten MPR. We use a standard measure of CBI first devised by @Cukierman1992 and recently updated through 2008 for about 80 countries by @Bodea2015. It ranges from 0.120 to 0.95 in the sample with higher values indicating more central bank independence. Currently countries in the Eurozone are excluded from regressions with this variable. The vast majority of the data set is from the period prior to the European Central Bank taking on banking supervision. Assigning the high independence of the ECB to Eurozone member state supervisory systems during this period is therefore difficult.
+
+One possibility is that elected politicians are more likely to loosen and less likely to tighten macro-prudential policy if they are close to an **election**. Doing so would spur (slow) credit provision to the economy that voters would like (dislike). To examine this we gathered executive election dates from @hyde2012.[^hyde4] Politicians would likely not only loosen or avoid tightening in the immediate election quarter, but also in the quarters leading up to the election. As such, we created a binary executive election variable that was one in the election quarter and the three previous quarters. It was zero otherwise.
+
+Perhaps politicians' **economic ideology** may play a role in macro-prudential decisions. To test this we include the government executive's economic policy orientation from the Database of Political Institutions [DPI, @DPI2001 updated through 2012], It is one for right-leaning, two for centre-leaning, and three for left-leaning.
+
+We also included various measures of economic inequality from [GET]
+
+# Preliminary results
+
+Because we are primarily interested in how politicians with electoral incentives choose macro-prudential policies, in the following regressions we focus on county-years with a Polity 2 score greater than five [@Marshall2009 updated through 2012]. This is the threshold at which the index's authors decide whether a country is democratic or not. Note that the results are substantively the same when using the full sample.
+
+The following tables are from logistic regressions with country and quarter fixed effects.[^qtfe] To avoid problem well known problems of unrealistic logistic regression coefficient sizes and, in the extreme case, complete separation we include minimal prior information suggested by @Gelman2008.[^bayesglm] Additionally, we may expect that countries that a country that has already tightened has a higher propensity to tighten again and having previously tightened is necessary to be able to loosen. As such we include a variable of **cumulative observed macro-prudential policy tightening**. This variable simply sums the number of observed instances of tightening by a country up to, but not including the present quarter. Results were largely substantively the same regardless of whether or not we include this variable.[^cuminclude]
+
+
+\begin{figure}
+    \caption{Predicted Probability of Macro-prudential Regulatory Policy Tightening and Loosening at Various Fitted Values of Central Bank Independence}
+    \label{predict_cbi}
+    \begin{center}
+        \includegraphics{figures/cbi_predictions.pdf}
+    \end{center}
+    {\scriptsize{
+    The figures show the median and highest probability density intervals (50\%, 90\%, and 95\%) of 1000 simulations. \\ 
+    The figures were created using estimates from the third models show in Tables \ref{tighten_table} and \ref{loosen_table}. In the left-panel GDP growth was fitted at the democratic sample's 90th percentile--7.4. In the right-panel GDP growth was fitted at the 10th percentile---0.85. Inflation and the cumulative number of previous tightening moves were fitted at the sample mean.  
+    }}
+\end{figure}
 
 \begin{table}
     \caption{Logistic Regression Estimates For Macro-prudential Policy \textbf{Tightening}}
@@ -68,16 +89,6 @@ We examined how a number of political and economic factors may affect decisions 
     {\scriptsize{All models include country and quarter fixed effects.}}
 \end{table}
 
-# Preliminary results
-
-Because we are primarily interested in how politicians with electoral incentives choose macro-prudential policies, in the following regressions we focus on county-years with a Polity 2 score greater than five [@Marshall2009 updated through 2012]. This is the threshold at which the index's authors decide whether a country is democratic or not.
-
-The following tables are from logistic regressions with country and quarter fixed effects.[^qt_fe] To avoid problem well known problems of unrealistic logistic regression coefficient sizes and, in the extreme case, complete separation we include minimal prior information suggested by @Gelman2008.[^bayesglm] Additionally, we may expect that countries that a country that has already tightened has a higher propensity to tighten again and having previously tightened is necessary to be able to loosen. As such we include a variable of **cumulative observed macroprudential policy tightening**. This variable simply sums the number of observed instances of tightening by a country up to, but not including the present quarter. Results were largely substantively the same regardless of whether or not we include this variable.[^cum_include]
-
-
-
-
-
 
 
 # References
@@ -88,9 +99,9 @@ The following tables are from logistic regressions with country and quarter fixe
 
 [^wdi]: The indicator IDs are FP.CPI.TOTL.ZG, NY.GDP.MKTP.KD.ZG, FS.AST.DOMS.GD.ZS, respectively. Note that we created the domestic credit growth variable by finding the year-on-year percentage change in domestic credit as a percentage of GDP.
 
-[^cum_include]: Only results from regressions including the variable are show.
+[^cuminclude]: Only results from regressions including the variable are show.
 
-[^qt_fe]: We consistently found that policies (both tightening and loosening) were more likely to be recorded by @dReinhardt2015 as occurring in the first quarter of the year.
+[^qtfe]: We consistently found that policies (both tightening and loosening) were more likely to be recorded by @dReinhardt2015 as occurring in the first quarter of the year.
 
 [^bayesglm]: We implemented this with the `bayesglm` function from the **arm** package [@armR] in R [@citeR].
 
