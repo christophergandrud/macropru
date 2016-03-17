@@ -39,27 +39,33 @@ t1 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    factor(country) + factor(quarter)
                , data = dem, family = binomial(link = 'logit'))
 
-t2 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
-                   `_1_gini_market` +
+t2 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth * 
+                   bis_housing_change + 
+                   inflation +
                    factor(country) + factor(quarter)
                , data = dem, family = binomial(link = 'logit'))
 
 t3 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   `_1_gini_market` +
+                   factor(country) + factor(quarter)
+               , data = dem, family = binomial(link = 'logit'))
+
+t4 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    cbi +
                    factor(country) + factor(quarter)
           , data = dem, family = binomial(link = 'logit'))
 
-t4 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+t5 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    cbi + execrlc + executive_election_4qt +
                    factor(country) + factor(quarter)
                , data = dem, family = binomial(link = 'logit'))
 
-t5 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation + 
+t6 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation + 
                    cbi + fiscal_trans_gfs +
                    factor(country) + factor(quarter)
                , data = dem, family = binomial(link = 'logit'))
 
-t6 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+t7 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    cbi + domestic_credit_change +
                    factor(country) + factor(quarter)
                , data = dem, family = binomial(link = 'logit'))
@@ -67,11 +73,12 @@ t6 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
 
 # Create display table for tightening ---------
 var_names <- c('(Intercept)', 'Cumulative Tightening (lag)', 'GDP Growth',
-               'Inflation', 'FinStress', 'Housing price $\\Delta$', 
+               'Inflation', 'FinStress', 'Housing Price $\\Delta$', 
+               'GDP Growth * Housing $\\Delta$',
                'Gini', 'CBI', 'Executive Ideology', 'Executive Election',
                'Fiscal Transparency', 'Credit Growth')
 
-est_tighten <- list(t1, t2, t3, t4, t5, t6)
+est_tighten <- list(t1, t2, t3, t4, t5, t6, t7)
 
 screenreg(est_tighten, 
        omit.coef = 'factor',
@@ -89,37 +96,43 @@ l1 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    factor(country) + factor(quarter)
           , data = dem, family = binomial(link = 'logit'))
 
-l2 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+l2 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth * 
+                   bis_housing_change + 
+                   inflation +
+                   factor(country) + factor(quarter)
+               , data = dem, family = binomial(link = 'logit'))
+
+l3 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    `_1_gini_market` + 
                    factor(country) + factor(quarter)
           , data = dem, family = binomial(link = 'logit'))
 
-l3 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+l4 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    cbi +
                    factor(country) + factor(quarter)
                , data = dem, family = binomial(link = 'logit'))
 
 
-l4 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+l5 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    cbi +
                    execrlc + executive_election_4qt +
               factor(country) + factor(quarter)
           , data = dem, family = binomial(link = 'logit'))
 
-l5 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+l6 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    cbi +
                    fiscal_trans_gfs +
                    factor(country) + factor(quarter)
                , data = dem, family = binomial(link = 'logit'))
 
-l6 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+l7 <- bayesglm(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + inflation +
                    cbi +
                    domestic_credit_change +
                    factor(country) + factor(quarter)
                , data = dem, family = binomial(link = 'logit'))
 
 # Create display table for loosening ---------
-est_loosen <- list(l1, l2, l3, l4, l5, l6)
+est_loosen <- list(l1, l2, l3, l4, l5, l6, l7)
 
 screenreg(est_loosen,
           omit.coef = 'factor',

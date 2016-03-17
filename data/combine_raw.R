@@ -58,10 +58,14 @@ elections$election_date <- sprintf("%s%s", elections$X5, elections$X6)
 elections$election_date <- ymd(elections$election_date)
 elections$year_quarter <- quarter(elections$election_date, with_year = TRUE)
 
+elections <- elections %>% DropNA(c('year_quarter'))
+
 #  Other cleaning
-elections <- elections %>% filter(X5 >= 2000)
+elections <- elections %>% filter(X5 >= 1999)
 elections$X3[elections$X3 == "Democratic Republic of Vietnam"] <- "Vietnam"
 elections$X3[elections$X3 == "German Federal Republic"] <- "Germany"
+elections$X3[elections$X3 == "Serbia (Yugoslavia)"] <- "Serbia"
+elections$X3[elections$X3 == "Serbia, Yugoslavia"] <- "Serbia"
 elections$country <- countrycode(elections$X3, origin = "country.name", 
                                  destination = "country.name")
 
@@ -154,20 +158,28 @@ cbi <- cbi %>% rename(cbi = lvau) %>% rename(cbi_weighted = lvaw)
 
 # WDI -------------
 wdi <- WDI(indicator = c('NY.GDP.MKTP.KD.ZG', 'FP.CPI.TOTL.ZG', 'SI.POV.GINI',
-                         'FS.AST.DOMS.GD.ZS'), 
+                         'FS.AST.DOMS.GD.ZS', 'NY.GDP.PCAP.PP.KD'), 
            start = 1990, end = 2015)
 wdi <- wdi %>% rename(gdp_growth = NY.GDP.MKTP.KD.ZG) %>% 
     rename(inflation = FP.CPI.TOTL.ZG) %>%
     rename(gini = SI.POV.GINI) %>% 
-    rename(domestic_credit = FS.AST.DOMS.GD.ZS)
+    rename(domestic_credit = FS.AST.DOMS.GD.ZS) %>%
+    rename(gdp_per_capita = NY.GDP.PCAP.PP.KD)
 
 wdi$country <- countrycode(wdi$iso2c, origin = 'iso2c',
                            destination = 'country.name')
 wdi <- wdi %>% DropNA('country')
 
-wdi <- wdi %>% select(-iso2c)
+wdi <- wdi %>% dplyr::select(-iso2c)
 wdi <- change(wdi, Var = 'domestic_credit', GroupVar = 'country', 
                   NewVar = 'domestic_credit_change')
+
+# Create lags 
+for (i in c('gdp_growth', 'inflation', 'gini', 'domestic_credit', 
+            'gdp_per_capita')) {
+    wdi <- slide(wdi, Var = i, GroupVar = 'country', TimeVar = 'year',
+                 NewVar = sprintf('%s_lag_1', i))
+}
 
 # BIS Housing price change -----------
 ## Downloaded from http://www.bis.org/statistics/pp_selected.htm

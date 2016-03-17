@@ -1,5 +1,5 @@
 ---
-title: "When Do Regulators Lean Against the Wind?: The Political Economy of Implementing Macro-prudential Regulatory Tools: Some very preliminary results"
+title: "When Do Regulators Lean Against the Wind?: The Political Economy of Implementing Macro-prudential Regulatory Tools: Preliminary results"
 author: "Jeffrey Chwieroth and Christopher Gandrud"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 header-includes:
@@ -38,7 +38,7 @@ Given that in the sample the use of some of these policies is rarely observed, w
 
 We examined how a number of political and economic factors may affect decisions to tighten and loosen macro-prudential policy.
 
-We examined a number of economic indicators from the World Bank's Development Indicators [@worldbank2016].[^wdi] These included the **GDP growth** and **domestic credit growth**. GDP growth is our focus. Macro-prudential policy may be used to calm asset price bubbles, as such we would expect more tightening when growth is high. We may expect that governments would loosen MPR when growth and specifically domestic credit growth is low in order to stimulate the economy. Unfortunately domestic credit growth data is not widely available and so we have a limited ability to directly examine this mechanism. Additionally, from the World Bank Development Indicators, we include **inflation rate** as a control.
+We examined a number of economic indicators from the World Bank's Development Indicators [@worldbank2016].[^wdi] These included the **GDP growth** and **domestic credit growth**. GDP growth is our focus. Macro-prudential policy may be used to calm asset price bubbles, as such we would expect more tightening when growth is high. We may expect that governments would loosen MPR when growth and specifically domestic credit growth is low in order to stimulate the economy. Unfortunately domestic credit growth data is not widely available and so we have a limited ability to directly examine this mechanism. Additionally, from the World Bank Development Indicators, we include **inflation rate** as a control. All World Bank Development Indicators are recorded at the annual level.[^wdilags]
 
 Governments may feel a need to tighten macro-prudential policy when asset prices are rising. A key asset prices, often discussed regarding macro-prudential policy, are **residential property prices**. Measuring national-level residential property prices is notoriously difficult [see @bis2014]. We use the 57 national series selected by the Bank of International Settlements [@bis2016] to be as comparable as possible. The indices are at quarterly intervals and in terms of real year-on-year percentage change.
 
@@ -50,7 +50,7 @@ One possibility is that elected politicians are more likely to loosen and less l
 
 Perhaps politicians' **economic ideology** may play a role in macro-prudential decisions. To test this we include the government executive's economic policy orientation from the Database of Political Institutions [DPI, @DPI2001 updated through 2012], It is one for right-leaning, two for centre-leaning, and three for left-leaning.
 
-We also included various measures of economic inequality from [GET]
+We also included various measures of economic inequality from @Solt2014. [FINISH WRITE UP]
 
 # Preliminary results
 
@@ -58,6 +58,9 @@ Because we are primarily interested in how politicians with electoral incentives
 
 The following tables are from logistic regressions with country and quarter fixed effects.[^qtfe] To avoid problem well known problems of unrealistic logistic regression coefficient sizes and, in the extreme case, complete separation we include minimal prior information suggested by @Gelman2008.[^bayesglm] Additionally, we may expect that countries that a country that has already tightened has a higher propensity to tighten again and having previously tightened is necessary to be able to loosen. As such we include a variable of **cumulative observed macro-prudential policy tightening**. This variable simply sums the number of observed instances of tightening by a country up to, but not including the present quarter. Results were largely substantively the same regardless of whether or not we include this variable.[^cuminclude]
 
+A consistent finding is that GDP Growth is associated with macro-prudential regulatory policy change. The effect is in the expected direction as more growth is associated with more tightening, likely because the factors causing the GDP growth are also causing bubbles that governments are trying to manage. Conversely, lower GDP growth is associated with MPR loosening. Governments may be easing up on the supply of credit to spur more growth. Another fairly consistent finding is the role that central bank independence appears to play.
+
+CBI is also in the expected direction for both loosening and tightening. More independent central banks are more likely to tighten and less likely to loosen MPR policy. To explore the size and estimation uncertainty of these effects we followed @King2000 and @simPH_JSS by simulating and plotting predicted probabilities of MPR tightening and loosening. Figure \ref{predict_cbi} shows the predicted probabilities in two contrasting scenarios. The left-panel shows predicted probabilities of instituting a tightening policy in a quarter when GDP growth is at the 90th percentile in our sample--7.4 percent.
 
 \begin{figure}
     \caption{Predicted Probability of Macro-prudential Regulatory Policy Tightening and Loosening at Various Fitted Values of Central Bank Independence}
@@ -66,8 +69,21 @@ The following tables are from logistic regressions with country and quarter fixe
         \includegraphics{figures/cbi_predictions.pdf}
     \end{center}
     {\scriptsize{
-    The figures show the median and highest probability density intervals (50\%, 90\%, and 95\%) of 1000 simulations. \\ 
-    The figures were created using estimates from the third models show in Tables \ref{tighten_table} and \ref{loosen_table}. In the left-panel GDP growth was fitted at the democratic sample's 90th percentile--7.4. In the right-panel GDP growth was fitted at the 10th percentile---0.85. Inflation and the cumulative number of previous tightening moves were fitted at the sample mean.  
+    The figures show the median and highest probability density intervals (50\%, 90\%, and 95\%) of 1000 simulations. \\
+    The figures were created using estimates from the fourth models show in Tables \ref{tighten_table} and \ref{loosen_table}. In the left-panel GDP growth was fitted at the democratic sample's 90th percentile--7.4 percent. In the right-panel GDP growth was fitted at the 10th percentile---0.85 percent. Inflation and the cumulative number of previous tightening moves were fitted at the sample mean.  
+    }}
+\end{figure}
+
+
+\begin{figure}
+    \caption{Predicted Probability of Macro-prudential Regulatory Policy Tightening Various Fitted Values of Housing Price change and GDP Growth}
+    \label{predict_cbi}
+    \begin{center}
+        \includegraphics{figures/bis_gdp_predictions.pdf}
+    \end{center}
+    {\scriptsize{
+    The figures show the median and highest probability density intervals (50\%, 90\%, and 95\%) of 1000 simulations. \\
+    The figure was created using estimates from the fourth models show in Tables \ref{tighten_table} and \ref{loosen_table}. In the left-panel GDP growth was fitted at the democratic sample's 90th percentile--7.4 percent. In the right-panel GDP growth was fitted at the 10th percentile---0.85 percent. Inflation and the cumulative number of previous tightening moves were fitted at the sample mean.  
     }}
 \end{figure}
 
@@ -89,6 +105,7 @@ The following tables are from logistic regressions with country and quarter fixe
     {\scriptsize{All models include country and quarter fixed effects.}}
 \end{table}
 
+# Conclusions
 
 
 # References
@@ -97,7 +114,9 @@ The following tables are from logistic regressions with country and quarter fixe
 
 [^hyde4]: We used Version 4 of the data set.
 
-[^wdi]: The indicator IDs are FP.CPI.TOTL.ZG, NY.GDP.MKTP.KD.ZG, FS.AST.DOMS.GD.ZS, respectively. Note that we created the domestic credit growth variable by finding the year-on-year percentage change in domestic credit as a percentage of GDP.
+[^wdi]: The indicator IDs are NY.GDP.MKTP.KD.ZG, FS.AST.DOMS.GD.ZS, and FP.CPI.TOTL.ZG, respectively. Note that we created the domestic credit growth variable by finding the year-on-year percentage change in domestic credit as a percentage of GDP.
+
+[^wdilags]: We also examined models with one year lags of these variables. In general these lags were not statistically significant.
 
 [^cuminclude]: Only results from regressions including the variable are show.
 
