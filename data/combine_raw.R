@@ -204,6 +204,17 @@ bis$bis_housing_change <- bis$bis_housing_change %>% as.numeric
 bis <- bis %>% arrange(country, year_quarter)
 bis <- bis %>% DropNA('bis_housing_change')
 
+#  Political Constraints (Henisz) ----------------------------- 
+pol_constraints <- import('data/raw/polcon2012.dta') %>%
+                    dplyr::select(polity_country, year, polconiii, polconv)
+
+pol_constraints$country <- countrycode(pol_constraints$polity_country,
+                                     origin = 'country.name',
+                                     destination = 'country.name')
+
+pol_constraints <- DropNA(pol_constraints, 'country')
+pol_constraints <- pol_constraints %>% dplyr::select(-polity_country) %>%
+                        filter(year >= 1999)
 
 # Combine ------
 comb <- merge(boe, elections_sub, by = c("country", "year_quarter"), 
@@ -218,6 +229,7 @@ comb <- merge(comb, fiscal_trans, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, cbi, by = c('country', 'year'), all.x = T)
 comb <- dMerge(comb, bis, by = c('country', 'year_quarter'), all = T)
 comb <- dMerge(comb, wdi, by = c('country', 'year'), all.x = T)
+comb <- merge(comb, pol_constraints, by = c('country', 'year'), all.x = T)
 comb <- comb %>% arrange(country, year_quarter)
 FindDups(comb, c('country', 'year_quarter'))
 

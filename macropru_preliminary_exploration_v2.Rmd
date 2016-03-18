@@ -70,7 +70,7 @@ CBI is also in the expected direction for both loosening and tightening. More in
     \end{center}
     {\scriptsize{
     The figures show the median and highest probability density intervals (50\%, 90\%, and 95\%) of 1000 simulations. \\
-    The figures were created using estimates from the fourth models show in Tables \ref{tighten_table} and \ref{loosen_table}. In the left-panel GDP growth was fitted at the democratic sample's 90th percentile--7.4 percent. In the right-panel GDP growth was fitted at the 10th percentile---0.85 percent. Inflation and the cumulative number of previous tightening moves were fitted at the sample mean.  
+    The figures were created using estimates from the fourth models show in tables \ref{tighten_table} and \ref{loosen_table}. In the left-panel GDP growth was fitted at the democratic sample's 90th percentile--7.4 percent. In the right-panel GDP growth was fitted at the 10th percentile--$-0.85$ percent. Inflation and the cumulative number of previous tightening moves were fitted at the sample mean.  
     }}
 \end{figure}
 
@@ -83,7 +83,7 @@ CBI is also in the expected direction for both loosening and tightening. More in
     \end{center}
     {\scriptsize{
     The figures show the median and highest probability density intervals (50\%, 90\%, and 95\%) of 1000 simulations. \\
-    The figure was created using estimates from the fourth models show in Tables \ref{tighten_table} and \ref{loosen_table}. In the left-panel GDP growth was fitted at the democratic sample's 90th percentile--7.4 percent. In the right-panel GDP growth was fitted at the 10th percentile---0.85 percent. Inflation and the cumulative number of previous tightening moves were fitted at the sample mean.  
+    The figure was created using estimates from the fourth model in Table \ref{tighten_table}. GDP growth was fitted at the democratic sample's 90th percentile--7.4 percent and the 10th percentile--$-0.85$ percent. Inflation and the cumulative number of previous tightening moves were fitted at the sample mean.  
     }}
 \end{figure}
 
