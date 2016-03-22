@@ -50,63 +50,43 @@ One possibility is that elected politicians are more likely to loosen and less l
 
 Perhaps politicians' **economic ideology** may play a role in macro-prudential decisions. To test this we include the government executive's economic policy orientation from the Database of Political Institutions [DPI, @DPI2001 updated through 2012], It is one for right-leaning, two for centre-leaning, and three for left-leaning.
 
-We also included various measures of economic inequality from @Solt2014. [FINISH WRITE UP]
+We also included various measures of economic inequality from @Solt2014. [JEFF FINISH WRITE UP]
 
 # Preliminary results
 
-Because we are primarily interested in how politicians with electoral incentives choose macro-prudential policies, in the following regressions we focus on county-years with a Polity 2 score greater than five [@Marshall2009 updated through 2012]. This is the threshold at which the index's authors decide whether a country is democratic or not. Note that the results are substantively the same when using the full sample.
+One possible estimation method for examining our binary dependent variables would be logistic regression. However, our data does not fit nicely into this modeling technique. Many of "independent" variables are strongly correlated with one another presenting issues of multicolinearity (see the Online Appendix) and likely violate the assumptions of the logistic and similar regression models. We also have many predictors (due to including country fixed effects) relative to our name of observed monetary policy decisions. All of these issue point to the usefulness of random forest classification [@Breiman1996;@Breiman2001].
 
-The following tables are from logistic regressions with country and quarter fixed effects.[^qtfe] To avoid problem well known problems of unrealistic logistic regression coefficient sizes and, in the extreme case, complete separation we include minimal prior information suggested by @Gelman2008.[^bayesglm] Additionally, we may expect that countries that a country that has already tightened has a higher propensity to tighten again and having previously tightened is necessary to be able to loosen. As such we include a variable of **cumulative observed macro-prudential policy tightening**. This variable simply sums the number of observed instances of tightening by a country up to, but not including the present quarter. Results were largely substantively the same regardless of whether or not we include this variable.[^cuminclude]
+A random forest is a non-parametric method that allows us to include many correlated variables in the same estimation model [@jones2015]. Simply, the algorithm builds on a method know as Classification and Regression Trees (CART). A CART algorithm starts with the complete data set (root node) "searches through all unique values of [explanatory variables] and calculates the number of cases that would be misclassified if a split would be made at that value" [@jones2015, 4]. CART creates problems of overfitted 'trees'. Random forests help overcome this problem by finding trees for a bootstrap sample of the data and then averaging over these trees. This method allows us to explore our data set to find potential non-linearities and interactions that would be difficult in a logistic regression context.
 
-A consistent finding is that GDP Growth is associated with macro-prudential regulatory policy change. The effect is in the expected direction as more growth is associated with more tightening, likely because the factors causing the GDP growth are also causing bubbles that governments are trying to manage. Conversely, lower GDP growth is associated with MPR loosening. Governments may be easing up on the supply of credit to spur more growth. Another fairly consistent finding is the role that central bank independence appears to play.
+We also ran confirmatory analyses using logistic regression models with stepwise included right-hand variables and minimally informative prior information [@Gelman2008] to avoid creating unreasonably large coefficient estimates. The results of these models are presented following the random forests.
 
-CBI is also in the expected direction for both loosening and tightening. More independent central banks are more likely to tighten and less likely to loosen MPR policy. To explore the size and estimation uncertainty of these effects we followed @King2000 and @simPH_JSS by simulating and plotting predicted probabilities of MPR tightening and loosening. Figure \ref{predict_cbi} shows the predicted probabilities in two contrasting scenarios. The left-panel shows predicted probabilities of instituting a tightening policy in a quarter when GDP growth is at the 90th percentile in our sample--7.4 percent.
+## Random Forests: MPR Tightening
 
-\begin{figure}
-    \caption{Predicted Probability of Macro-prudential Regulatory Policy Tightening and Loosening at Various Fitted Values of Central Bank Independence}
-    \label{predict_cbi}
-    \begin{center}
-        \includegraphics{figures/cbi_predictions.pdf}
-    \end{center}
-    {\scriptsize{
-    The figures show the median and highest probability density intervals (50\%, 90\%, and 95\%) of 1000 simulations. \\
-    The figures were created using estimates from the fourth models show in tables \ref{tighten_table} and \ref{loosen_table}. In the left-panel GDP growth was fitted at the democratic sample's 90th percentile--7.4 percent. In the right-panel GDP growth was fitted at the 10th percentile--$-0.85$ percent. Inflation and the cumulative number of previous tightening moves were fitted at the sample mean.  
-    }}
-\end{figure}
+We first examined random forests with macro-prudential regulatory policy tightening as the response variable. To assess the relative predictive performance of each of the variables we used to try to classify country-quarters as experiencing MPR tightening or now we first examined the variables' minimal depth. Figure \ref{depth_tighten} shows the minimal depths for each variable included in this model. The assumption behind this plot is that variables have a higher impact on predicting MPR policy tightening if they more frequently split nodes closest to the "trunk" of the tree, i.e. the root node [@Ehrlinger2015, 11].
 
 
 \begin{figure}
-    \caption{Predicted Probability of Macro-prudential Regulatory Policy Tightening Various Fitted Values of Housing Price change and GDP Growth}
-    \label{predict_cbi}
+    \caption{Minimal Depth For Trees Classifying Macro-prudential Policy Tightening}
+    \label{depth_tighten}
     \begin{center}
-        \includegraphics{figures/bis_gdp_predictions.pdf}
+        \includegraphics{figures/tighten_md.pdf}
     \end{center}
-    {\scriptsize{
-    The figures show the median and highest probability density intervals (50\%, 90\%, and 95\%) of 1000 simulations. \\
-    The figure was created using estimates from the fourth model in Table \ref{tighten_table}. GDP growth was fitted at the democratic sample's 90th percentile--7.4 percent and the 10th percentile--$-0.85$ percent. Inflation and the cumulative number of previous tightening moves were fitted at the sample mean.  
-    }}
+
 \end{figure}
 
-\begin{table}
-    \caption{Logistic Regression Estimates For Macro-prudential Policy \textbf{Tightening}}
-    \label{tighten_table}
-    \begin{center}
-        \input{tables/tightening_results.tex}
-    \end{center}
-    {\scriptsize{All models include country and quarter fixed effects.}}
-\end{table}
+## Random Forests: MPR Loosening
 
-\begin{table}
-    \caption{Logistic Regression Estimates For Macro-prudential Policy \textbf{Loosening}}
-    \label{loosen_table}
-    \begin{center}
-        \input{tables/loosen_results.tex}
-    \end{center}
-    {\scriptsize{All models include country and quarter fixed effects.}}
-\end{table}
 
 # Conclusions
 
+
+\clearpage
+
+# Appendix
+
+\begin{landscape}
+    \input{tables/iv_correlations.tex}
+\end{landscape}
 
 # References
 
@@ -121,7 +101,3 @@ CBI is also in the expected direction for both loosening and tightening. More in
 [^cuminclude]: Only results from regressions including the variable are show.
 
 [^qtfe]: We consistently found that policies (both tightening and loosening) were more likely to be recorded by @dReinhardt2015 as occurring in the first quarter of the year.
-
-[^bayesglm]: We implemented this with the `bayesglm` function from the **arm** package [@armR] in R [@citeR].
-
-[^elections_skept]: We are cautious about this finding at this point as it is somewhat model dependent (i.e. there is no statistically significant effect of elections in a model without other covariates).

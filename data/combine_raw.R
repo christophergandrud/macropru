@@ -100,6 +100,8 @@ swiid$country <- countrycode(swiid$country, origin = 'country.name',
 swiid <- swiid[, c('country', 'year', '_1_gini_net', '_1_gini_market', 
                    '_1_redist', '_1_share1')]
 
+names(swiid) <- gsub('_1_', '', names(swiid))
+
 # FinStress -----
 URL <- 'https://raw.githubusercontent.com/christophergandrud/EIUCrisesMeasure/master/data/FinStress.csv'
 finstress_index <- import(URL)
@@ -130,6 +132,15 @@ dpi <- dpi %>% select(-iso2c)
 # Clean up Missing
 dpi$execrlc[dpi$execrlc == -999] <- NA
 dpi$execrlc[dpi$execrlc == 0] <- NA
+
+# Unified Democracy Score --------------------------------------
+# Downloaded from http://www.unified-democracy-scores.org/uds.html
+uds <- import('data/raw/uds_summary.csv') %>%
+        dplyr::select(country, year, mean) %>% 
+        rename(uds_mean = mean)
+
+uds$country <- countrycode(uds$country, origin = 'country.name',
+                           destination = 'country.name')
 
 # Wang et al. GFS Fiscal transparency -----------
 # Downloaded from https://www.imf.org/External/pubs/cat/longres.aspx?sk=43177.0
@@ -222,6 +233,7 @@ comb <- merge(boe, elections_sub, by = c("country", "year_quarter"),
 comb <- merge(comb, macro_gov, by = 'country', all.x = T)
 comb <- merge(comb, swiid, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, polity, by = c('country', 'year'), all.x = T)
+comb <- merge(comb, uds, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, finstress_index, by = c('country', 'year_quarter'), 
               all.x = T)
 comb <- merge(comb, dpi, by = c('country', 'year'), all.x = T)
