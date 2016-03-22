@@ -62,8 +62,7 @@ We also ran confirmatory analyses using logistic regression models with stepwise
 
 ## Random Forests: MPR Tightening
 
-We first examined random forests with macro-prudential regulatory policy tightening as the response variable. To assess the relative predictive performance of each of the variables we used to try to classify country-quarters as experiencing MPR tightening or now we first examined the variables' minimal depth. Figure \ref{depth_tighten} shows the minimal depths for each variable included in this model. The assumption behind this plot is that variables have a higher impact on predicting MPR policy tightening if they more frequently split nodes closest to the "trunk" of the tree, i.e. the root node [@Ehrlinger2015, 11].
-
+We first examined random forests with macro-prudential regulatory policy tightening as the response variable. To assess the relative predictive performance of each of the variables we used to try to classify country-quarters as experiencing MPR tightening or now we first examined the variables' minimal depth. Figure \ref{depth_tighten} shows the minimal depths for each variable included in this model. The assumption behind this plot is that variables have a higher impact on predicting MPR policy tightening if they more frequently split nodes closest to the "trunk" of the tree, i.e. the root node [@Ehrlinger2015, 11]. So a lower minimal depth indicates that the variable is more important for predicting MPR policy tightening. Using the optimistic rule developed by \cite{Ishwaran2010} minimum depth values below the mean minimum depth across the variables indicate variables that are important for predicting MPR policy tightening.
 
 \begin{figure}
     \caption{Minimal Depth For Trees Classifying Macro-prudential Policy Tightening}
@@ -71,6 +70,32 @@ We first examined random forests with macro-prudential regulatory policy tighten
     \begin{center}
         \includegraphics{figures/tighten_md.pdf}
     \end{center}
+
+    {\scriptsize{The dashed vertical line indicates mean minimum depth across the variables. Minimum depths below the mean depth are considered to be important in forest prediction.}}
+
+\end{figure}
+
+
+We can see that this rule excludes executive election periods as an important predictor of MPR policy tightening. This suggests against the idea of a macro-prudential electoral cycle.
+
+It is important to note that the country "fixed effect" had a very low minimal depth (see Figure \ref{depth_tighten}). This suggests that there are likely important unobserved factors contributing to MPR policy tightening decisions.   
+
+To get a sense of the estimated form of other observed variables' effect on MPR policy tightening, we created found their partial dependence. These are shown in Figure \ref{partial_tighten}. Partial dependence is found by calculating the average prediction from the random forest for each value of $X = x$ variable of interest over all other covariates in $X$ using:
+
+$$
+\bar{f}(x) = \frac{1}{n}\sum_{i=1}^{n}\hat{f}(x,\; x_{i,o}).
+$$
+
+$\hat{f}$ is the predicted MPR policy tightening decision. $x_{i,o}$ is the value for all other covariates than $X=x$ [see @Friedman2000;@Ehrlinger2015, 16].  
+
+\begin{figure}
+    \caption{Partial Dependence Plot for Macro-prudential Regulatory Policy Tightening}
+    \label{partial_tighten}
+    \begin{center}
+        \includegraphics{figures/patial_tighten.pdf}
+    \end{center}
+
+    {\scriptsize{Note that predictions are for policy change per quarter.}}
 
 \end{figure}
 
@@ -82,7 +107,7 @@ We first examined random forests with macro-prudential regulatory policy tighten
 
 \clearpage
 
-# Appendix
+# Online Appendix
 
 \begin{landscape}
     \input{tables/iv_correlations.tex}

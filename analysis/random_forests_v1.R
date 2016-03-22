@@ -110,12 +110,14 @@ plot(gg_v_tighten, xvar = xvar_tighten, panel = TRUE)
 partial_bis_tighten <- plot.variable(rt1, xvar = xvar_tighten, partial = TRUE,
                              show.plots = FALSE)
 
-plot(gg_partial(partial_bis_tighten), panel = TRUE, alpha = 0.5) +
-    stat_smooth() + xlab('') +
-    ylab('Predicted Probability\n') +
-    xlab('Predictor Scale\n') +
-    ggtitle('Partial Dependence Panels for MPR Tightening\n') +
-    theme_bw()
+partial_tighten <- plot(gg_partial(partial_bis_tighten), panel = TRUE, alpha = 0.5) +
+                    stat_smooth() + xlab('') +
+                    ylab('Predicted Probability of MPR Tightening\n') +
+                    xlab('\nPredictor Scale') +
+                    theme_bw()
+
+ggsave(partial_tighten, filename = 'papers/figures/patial_tighten.pdf', 
+       width = 10, height = 8)
 
 # Interactions for tightening -----------
 interation_tighten <- find.interaction(rt1)
