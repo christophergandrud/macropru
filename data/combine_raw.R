@@ -169,13 +169,15 @@ cbi <- cbi %>% rename(cbi = lvau) %>% rename(cbi_weighted = lvaw)
 
 # WDI -------------
 wdi <- WDI(indicator = c('NY.GDP.MKTP.KD.ZG', 'FP.CPI.TOTL.ZG', 'SI.POV.GINI',
-                         'FS.AST.DOMS.GD.ZS', 'NY.GDP.PCAP.PP.KD'), 
+                         'FS.AST.DOMS.GD.ZS', 'NY.GDP.PCAP.PP.KD',
+                         'FB.BNK.CAPA.ZS'), 
            start = 1990, end = 2015)
 wdi <- wdi %>% rename(gdp_growth = NY.GDP.MKTP.KD.ZG) %>% 
     rename(inflation = FP.CPI.TOTL.ZG) %>%
     rename(gini = SI.POV.GINI) %>% 
     rename(domestic_credit = FS.AST.DOMS.GD.ZS) %>%
-    rename(gdp_per_capita = NY.GDP.PCAP.PP.KD)
+    rename(gdp_per_capita = NY.GDP.PCAP.PP.KD) %>%
+    rename(capital_to_assets = FB.BNK.CAPA.ZS)
 
 wdi$country <- countrycode(wdi$iso2c, origin = 'iso2c',
                            destination = 'country.name')
@@ -227,6 +229,43 @@ pol_constraints <- DropNA(pol_constraints, 'country')
 pol_constraints <- pol_constraints %>% dplyr::select(-polity_country) %>%
                         filter(year >= 1999)
 
+# Central Bank Policy Rate, per annum ------------------------------
+# from IMF International Financial Statistics
+# Downloaded 23 March 2016
+ifs <- import('data/raw/Interest_Rates.xlsx', skip = 5, na = '...')
+
+# Cleanup
+names(ifs) <- c('filler', 'country', ifs[1, 3:ncol(ifs)])
+ifs <- ifs[-1, -1]
+ifs <- ifs[, 1:17]
+
+ifs <- ifs %>% gather(year, cb_policy_rate, 2:ncol(ifs))
+
+# Convert Euroarea to euro member policy rates
+euro_policy_rate <- ifs %>% filter(country == 'Euro Area')
+
+# Download euro member data
+euro_member <- import('https://raw.githubusercontent.com/christophergandrud/euro_membership/master/data/euro_membership_data.csv')
+
+euro_policy_rate <- merge(euro_member, euro_policy_rate, by = 'year') %>%
+    select(country.x, year, cb_policy_rate) %>%
+    rename(country = country.x)
+
+ifs$country <- countrycode(ifs$country, origin = 'country.name', 
+                           destination = 'country.name')
+
+ifs <- ifs %>% DropNA(c('country', 'cb_policy_rate')) 
+
+ifs <- rbind(euro_policy_rate, ifs) %>% arrange(country, year)
+
+ifs$cb_policy_rate <- as.numeric(ifs$cb_policy_rate)
+
+ifs <- change(ifs, Var = 'cb_policy_rate', GroupVar = 'country', 
+             TimeVar = 'year', NewVar = 'cb_policy_rate_change', 
+             type = 'percent')
+
+FindDups(ifs, c('country', 'year'))
+
 # Combine ------
 comb <- merge(boe, elections_sub, by = c("country", "year_quarter"), 
               all.x = T)
@@ -242,6 +281,7 @@ comb <- merge(comb, cbi, by = c('country', 'year'), all.x = T)
 comb <- dMerge(comb, bis, by = c('country', 'year_quarter'), all = T)
 comb <- dMerge(comb, wdi, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, pol_constraints, by = c('country', 'year'), all.x = T)
+comb <- merge(comb, ifs, by = c('country', 'year'), all.x = T)
 comb <- comb %>% arrange(country, year_quarter)
 FindDups(comb, c('country', 'year_quarter'))
 
@@ -291,9 +331,10 @@ comb <- slide(comb, Var = 'cumsum_any_tighten', GroupVar = 'country',
               TimeVar = 'year_quarter', NewVar = 'lag_cumsum_any_tighten')
 
 comb <- comb %>% MoveFront(c("country", "countrycode", "year",
-                             "year_quarter", "quarter", "executive_election_4qt", 
-                             "polity2", 
-                             "finstress_qt_mean"))
+                             "year_quarter", "quarter"))
+
+# Make sure there are no missing years
+comb$year <- comb$year_quarter %>% round(digits = 0) %>% integer
 
 comb <- comb %>% select(-standardized_country, -countryname)
 

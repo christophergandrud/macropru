@@ -29,9 +29,9 @@ main$gini_diff_red <- main$gini_market - main$redist
 # Find variable correlations
 keepers <- c('any_tighten', 'lag_cumsum_any_tighten',
              'gdp_growth', 'gdp_per_capita', 'inflation', 
-             'finstress_qt_mean',
              'bis_housing_change', 'cbi', 
-             'executive_election_4qt',
+             'executive_election_4qt', 'cb_policy_rate', 
+             'cb_policy_rate_change',
              'gini_diff_market_net', 'uds_mean')
 
 keeper_labels <- c('Any MPR Tightening', 'Cum. Tight. (lag)', 
@@ -49,10 +49,24 @@ print(xtable(iv_correlations,
       file = 'papers/tables/iv_correlations.tex')
 
 # Set as factors
-main$country <- as.factor(main$country)
+main$country <- factor(main$country)
 # main$year <- as.factor(main$year)
 # main$quarter <- as.factor(main$quarter)
-main$executive_election_4qt <- as.factor(main$executive_election_4qt)
+main$executive_election_4qt <- factor(main$executive_election_4qt)
+
+
+main$mapp_cb_chair <- NA
+main$mapp_cb_chair[main$mapp < 3 & !is.na(main$mapp)] <- 0
+main$mapp_cb_chair[main$mapp >= 3] <- 1
+
+main$mof_cb_chair <- NA
+main$mof_cb_chair[main$mof < 3 & !is.na(main$mof)] <- 0
+main$mof_cb_chair[main$mof >= 3] <- 1
+
+main$mapp_cb_chair <- factor(main$mapp_cb_chair)
+main$mapp <- factor(main$mapp)
+main$mof <- factor(main$mof)
+main$mipp <- factor(main$mipp)
 
 # Rescale DV to get easily interpretable estimates 
 main$any_tighten[main$any_tighten == 0] <- 4
@@ -61,8 +75,8 @@ main$any_tighten[main$any_tighten == 1] <- 3
 main$any_loosen[main$any_loosen == 0] <- 4
 main$any_loosen[main$any_loosen == 1] <- 3
 
-main$any_tighten <- as.factor(main$any_tighten)
-main$any_loosen <- as.factor(main$any_loosen)
+main$any_tighten <- factor(main$any_tighten)
+main$any_loosen <- factor(main$any_loosen)
 
 FindDups(main, c('country', 'year_quarter'))
 
@@ -74,11 +88,25 @@ dem = main
 # Keep complete cases
 dem_no_na_1 <- dem %>% DropNA(keepers)
 
+# Table of country quarter sample used in the models -----------
+the_sample <- dem_no_na_1 %>% group_by(country) %>%
+                summarise(`First Year` = min(year),
+                          `Last Year` = max(year)) %>%
+                rename(Country = country)
+
+print(xtable(the_sample, 
+             caption = 'Country Quarter-Year Sample Included in the Random Forests After Deleting Cases with Missing Values'),
+      caption.placement = 'top',
+      size = 'tiny',
+      file = 'papers/tables/rf_sample.tex')
+
+
 # RF for Tightening MPR -------------------------------------------------------
 rt1 <- rfsrc(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + 
-                 bis_housing_change +
+                 bis_housing_change + 
                  inflation + gini_diff_market_net + executive_election_4qt +
-                 finstress_qt_mean + cbi + polconv + uds_mean + gdp_per_capita +
+                 cb_policy_rate + cb_policy_rate_change +
+                 cbi + polconv + uds_mean + gdp_per_capita +
                  country + year + quarter
              , data = dem_no_na_1, proximity = TRUE)
 
@@ -114,7 +142,7 @@ partial_bis_tighten <- plot.variable(rt1, xvar = xvar_tighten, partial = TRUE,
 
 partial_tighten <- plot(gg_partial(partial_bis_tighten), panel = TRUE, 
                         alpha = 0.5) +
-                    stat_smooth() + xlab('') +
+                    geom_line() + xlab('') +
                     ylab('Predicted Probability of MPR Tightening\n') +
                     xlab('\nPredictor Scale') +
                     theme_bw()
@@ -129,10 +157,11 @@ plot(gg_interaction(interation_tighten), panel = TRUE)
 
 
 # RF for Loosening -------------------------------------------------------------
-rl1 <- rfsrc(any_loosen ~ ~ lag_cumsum_any_tighten + gdp_growth + 
-                 bis_housing_change +
+rl1 <- rfsrc(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + 
+                 bis_housing_change + 
                  inflation + gini_diff_market_net + executive_election_4qt +
-                 finstress_qt_mean + cbi + polconv + uds_mean + gdp_per_capita +
+                 cb_policy_rate + cb_policy_rate_change +
+                 cbi + polconv + uds_mean + gdp_per_capita +
                  country + year + quarter
              , data = dem_no_na_1)
 
@@ -151,7 +180,7 @@ partial_bis_loosen <- plot.variable(rl1, xvar = xvar_loosen, partial = TRUE,
                                      show.plots = FALSE)
 
 plot(gg_partial(partial_bis_loosen), panel = TRUE, alpha = 0.5) +
-    stat_smooth() + xlab('') +
+    geom_line() + xlab('') +
     ylab('Predicted Probability\n') +
     xlab('Predictor Scale\n') +
     ggtitle('Partial Dependence Panels for MPR Loosening\n') +
