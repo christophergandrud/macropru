@@ -46,9 +46,11 @@ As macro-prudential policy is broadly an attempt to strengthen financial markets
 
 Elected politicians may find it difficult to tighten macro-prudential policy generally as this may slow economic growth in the short-term, even if it promotes stability in the future. Countries with more **central bank independence** (CBI) suffer less from such a time inconsistency problem. Independent central banks were created under the rational that they would not suffer from the electorally induced time-inconsistency problems in monetary policy-making faced by elected politicians. So, countries with independent central banks may be more likely to tighten MPR. We use a standard measure of CBI first devised by @Cukierman1992 and recently updated through 2008 for about 80 countries by @Bodea2015. It ranges from 0.120 to 0.95 in the sample with higher values indicating more central bank independence. Currently countries in the Eurozone are excluded from regressions with this variable. The vast majority of the data set is from the period prior to the European Central Bank taking on banking supervision. Assigning the high independence of the ECB to Eurozone member state supervisory systems during this period is therefore difficult.
 
-One possibility is that elected politicians are more likely to loosen and less likely to tighten macro-prudential policy if they are close to an **election**. Doing so would spur (slow) credit provision to the economy that voters would like (dislike). To examine this we gathered executive election dates from @hyde2012.[^hyde4] Politicians would likely not only loosen or avoid tightening in the immediate election quarter, but also in the quarters leading up to the election. As such, we created a binary executive election variable that was one in the election quarter and the three previous quarters. It was zero otherwise.
+It may be that politicians that are more accountable to voters with short-time horizons and who benefit from easy credit would be less likely to tighten monetary policy. To examine this possibility, we used mean Unified Democracy Scores (UDS) from @Pemstein2010 which they updated through 2012. UDS scores are found using a Bayesian latent trait model of ten commonly used measures of democracy.[CORRECT?] It ranges from about -2.1 to 2.2 where higher scores indicate a higher level of democracy.
 
-Perhaps politicians' **economic ideology** may play a role in macro-prudential decisions. To test this we include the government executive's economic policy orientation from the Database of Political Institutions [DPI, @DPI2001 updated through 2012], It is one for right-leaning, two for centre-leaning, and three for left-leaning.
+One possible manifestation of this electoral accountability effect may be a macro-prudential regulatory policy electoral cycle. Elected politicians may be more likely to loosen and less likely to tighten macro-prudential policy if they are close to an **election**. Doing so would spur (slow) credit provision to the economy that voters would like (dislike). To examine this we gathered executive election dates from @hyde2012.[^hyde4] Politicians would likely not only loosen or avoid tightening in the immediate election quarter, but also in the quarters leading up to the election. As such, we created a binary executive election variable that was one in the election quarter and the three previous quarters. It was zero otherwise.
+
+Perhaps politicians' **economic ideology** may play a role in macro-prudential decisions. To test this we include the government executive's economic policy orientation from the Database of Political Institutions [DPI, @DPI2001 updated through 2012], It is one for right-leaning, two for centre-leaning, and three for left-leaning. We never found any support for this variable, so results from models using it are not shown below.
 
 We also included various measures of economic inequality from @Solt2014. [JEFF FINISH WRITE UP]
 
@@ -62,7 +64,7 @@ We also ran confirmatory analyses using logistic regression models with stepwise
 
 ## Random Forests: MPR Tightening
 
-We first examined random forests with macro-prudential regulatory policy tightening as the response variable. To assess the relative predictive performance of each of the variables we used to try to classify country-quarters as experiencing MPR tightening or now we first examined the variables' minimal depth. Figure \ref{depth_tighten} shows the minimal depths for each variable included in this model. The assumption behind this plot is that variables have a higher impact on predicting MPR policy tightening if they more frequently split nodes closest to the "trunk" of the tree, i.e. the root node [@Ehrlinger2015, 11]. So a lower minimal depth indicates that the variable is more important for predicting MPR policy tightening. Using the optimistic rule developed by \cite{Ishwaran2010} minimum depth values below the mean minimum depth across the variables indicate variables that are important for predicting MPR policy tightening.
+We first examined random forests with macro-prudential regulatory policy tightening as the response variable. To assess the relative predictive performance of each of the variables we used to try to classify country-quarters as experiencing MPR tightening or now we first examined the variables' minimal depth. Figure \ref{depth_tighten} shows the minimal depths for each variable included in this model. The assumption behind this plot is that variables have a higher impact on predicting MPR policy tightening if they more frequently split nodes closest to the "trunk" of the tree, i.e. the root node [@Ehrlinger2015, 11]. So a lower minimal depth indicates that the variable is more important for predicting MPR policy tightening. Using the optimistic rule developed by \cite{Ishwaran2010} minimum depth values below the mean minimum depth across the variables indicate variables that are important for predicting MPR policy tightening.[^rfvisuals]
 
 \begin{figure}
     \caption{Minimal Depth For Trees Classifying Macro-prudential Policy Tightening}
@@ -75,18 +77,17 @@ We first examined random forests with macro-prudential regulatory policy tighten
 
 \end{figure}
 
-
 We can see that this rule excludes executive election periods as an important predictor of MPR policy tightening. This suggests against the idea of a macro-prudential electoral cycle.
 
-It is important to note that the country "fixed effect" had a very low minimal depth (see Figure \ref{depth_tighten}). This suggests that there are likely important unobserved factors contributing to MPR policy tightening decisions.   
+It is important to note that the country "fixed effect" had a very low minimal depth and the year and quarter effects were also below the minimal depth threshold (see Figure \ref{depth_tighten}). This suggests that there are likely other important unobserved factors that vary by country and time contributing to MPR policy tightening decisions.
 
-To get a sense of the estimated form of other observed variables' effect on MPR policy tightening, we created found their partial dependence. These are shown in Figure \ref{partial_tighten}. Partial dependence is found by calculating the average prediction from the random forest for each value of $X = x$ variable of interest over all other covariates in $X$ using:
+To get a sense of the estimated form of other observed variables' effect on MPR policy tightening, we created found their partial dependence. These are shown in Figure \ref{partial_tighten}. Partial dependence is found by calculating the average prediction from the random forest for each value of $X = x$ variable of interest over all other covariates in $X$ using:[^partialnumber]
 
 $$
 \bar{f}(x) = \frac{1}{n}\sum_{i=1}^{n}\hat{f}(x,\; x_{i,o}).
 $$
 
-$\hat{f}$ is the predicted MPR policy tightening decision. $x_{i,o}$ is the value for all other covariates than $X=x$ [see @Friedman2000;@Ehrlinger2015, 16].  
+$\hat{f}$ is the predicted MPR policy tightening decision. $x_{i,o}$ is the value for all other covariates than $X=x$ [see @Friedman2000;@Ehrlinger2015, 16]. We can think of partial dependence as the average prediction for a value of one explanatory variable averaged within the joint values of the other predictors [@jones2015, 8].
 
 \begin{figure}
     \caption{Partial Dependence Plot for Macro-prudential Regulatory Policy Tightening}
@@ -95,9 +96,19 @@ $\hat{f}$ is the predicted MPR policy tightening decision. $x_{i,o}$ is the valu
         \includegraphics{figures/patial_tighten.pdf}
     \end{center}
 
-    {\scriptsize{Note that predictions are for policy change per quarter.}}
+    {\scriptsize{Variables shown are those that were below the minimal debt threshold. Two of the "fixed effect" variables (country and quarter) are also not show. Note that predictions are for policy change to be made per quarter.}}
 
 \end{figure}
+
+GDP Growth appears to have a decidedly non-linear relationship with MPR policy tightening in a manner that we would expect from a model of policy-maker behaviour where they are trying calm asset price bubbles. There is a very low probability of MPR policy tightening at growth levels up to about 5 percent of GDP. From this point, the probability of tightening rises dramatically, reaching about 20 percent per quarter when growth is around 10 percent of GDP.
+
+Housing price changes appear to have a decidedly U-shaped relationship with monetary policy tightening. When housing prices are stable--around zero percent change--there is a low average probability of tightening. Large year-on-year quarterly housing price increases bring the probability of tightening to about 10 percent and above per quarter. This is what we would expect from policy-makers using MPR policy tightening to quell property price bubbles. Interestingly, large housing price declines are also associated with tightening. The countries in the model where housing prices declined more than 5 percent and had tightening included Brazil (quarter 1, 2003), Canada (quarter 4, 2008), Hungary (quarters 1 and 2, 2010), Peru (quarter 3, 2006), and Singapore (quarter 3, 2009). Brazil tightened reserve requirements. Canada, Hungary, and Singapore tightened lending standards, despite falling housing prices. Peru tightened capital requirements. Given the wider context of the Global Financial Crisis in which Canada, Hungary, and Singapore tightened it may be that their tightening was a late date measure to prevent banking system contagion from a crisis that was already hitting economic growth and so housing prices [JEFF DOES THIS MAKE SENSE?]. We see a possible similar Global Financial Crisis effect by looking at the partial dependence for year. The predicted probability of tightening increases markedly for 2010.  
+
+Interestingly, many of the other predictor variables exhibit a broad U-Shaped relationship with macro-prudential regulatory policy tightening. Less democratic countries appear more likely to tighten. In our estimation sample, less democratic countries such as Singapore, Thailand, Malaysia, and Colombia all tightened during the Global Financial Crisis. While we did not find evidence for a macro-prudential electoral cycle, the fact that less democratic countries were more likely to tighten suggests that electoral institutions may have a general effect not tied to the electoral calendar, but to electoral accountability generally. Politicians in more democratic countries may just be under greater pressure from voters to maintain the supply of credit.
+
+It is important to note that there are important exceptions to this finding. The highly democratic countries Norway, Sweden, and Switzerland all tightened during the Global Financial Crisis.[^demtight] They may have compensatory institutions that allow then to overcome electoral pressures for easy credit.
+
+One such institution may be central bank independence. We can see that countries with highly independent central banks (i.e. above 0.75 on the @Bodea2015 measure).
 
 ## Random Forests: MPR Loosening
 
@@ -109,9 +120,8 @@ $\hat{f}$ is the predicted MPR policy tightening decision. $x_{i,o}$ is the valu
 
 # Online Appendix
 
-\begin{landscape}
-    \input{tables/iv_correlations.tex}
-\end{landscape}
+\input{tables/iv_correlations.tex}
+
 
 # References
 
@@ -126,3 +136,9 @@ $\hat{f}$ is the predicted MPR policy tightening decision. $x_{i,o}$ is the valu
 [^cuminclude]: Only results from regressions including the variable are show.
 
 [^qtfe]: We consistently found that policies (both tightening and loosening) were more likely to be recorded by @dReinhardt2015 as occurring in the first quarter of the year.
+
+[^partialnumber]: Largely for computational reasons, for variables with many values predictions are made for a subset of the values.
+
+[^rfvisuals]: We used the `ggRandomForests` package [@r-ggRandomForests] for R to find minimum depths and create partial dependence plots.
+
+[^demtight]: Norway and Sweden tightened lending standards in 2010 and Switzerland tightened leverage limits in 2008.

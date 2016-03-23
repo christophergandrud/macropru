@@ -36,21 +36,22 @@ keepers <- c('any_tighten', 'lag_cumsum_any_tighten',
 
 keeper_labels <- c('Any MPR Tightening', 'Cum. Tight. (lag)', 
                    'GDP Growth', 'GDP/Capita', 'Inflation', 'FinStress',
-                   'Housing Chng', 'CBI', 'Election Period',
+                   'Housing Chng', 'CBI', 'Election',
                    'Gini Diff.', 'UDS')
 
 subbed <- main[, keepers[-1]]
 names(subbed) <- keeper_labels[-1]
 iv_correlations <- cor(subbed, use = 'complete.obs')
-print(xtable(iv_correlations), caption.placement = 'top',
-      caption = 'Right-hand Variable Correlations',
+print(xtable(iv_correlations, 
+      caption = 'Predictor Variable Correlations'),
+      caption.placement = 'top',
       size = 'tiny',
       file = 'papers/tables/iv_correlations.tex')
 
 # Set as factors
 main$country <- as.factor(main$country)
-main$year <- as.factor(main$year)
-main$quarter <- as.factor(main$quarter)
+# main$year <- as.factor(main$year)
+# main$quarter <- as.factor(main$quarter)
 main$executive_election_4qt <- as.factor(main$executive_election_4qt)
 
 # Rescale DV to get easily interpretable estimates 
@@ -74,10 +75,11 @@ dem = main
 dem_no_na_1 <- dem %>% DropNA(keepers)
 
 # RF for Tightening MPR -------------------------------------------------------
-rt1 <- rfsrc(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + bis_housing_change +
+rt1 <- rfsrc(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + 
+                 bis_housing_change +
                  inflation + gini_diff_market_net + executive_election_4qt +
                  finstress_qt_mean + cbi + polconv + uds_mean + gdp_per_capita +
-                 country
+                 country + year + quarter
              , data = dem_no_na_1, proximity = TRUE)
 
 # Plot OOB errors against the growth of the forest
@@ -91,15 +93,15 @@ tighten_md_labels <- c('GDP Growth', 'Country', 'Housing Price Chng',
 
 gg_md_tighten <- gg_minimal_depth(rt1)
 tighten_md <- plot(gg_md_tighten) +
-                scale_x_discrete(labels = rev(tighten_md_labels)) +
-                #ggtitle('Minimal Variable Depth for Predicting Any Tightening\n') +
+              #  scale_x_discrete(labels = rev(tighten_md_labels)) +
                 theme_bw()
 
 ggsave(tighten_md, filename = 'papers/figures/tighten_md.pdf', height = 5.82, 
        width = 9.25)
 
 # Order variables by minimal depth rank (exclude country)
-xvar_tighten <- gg_md_tighten$topvars[!(gg_md_tighten$topvars %in% 'country')]
+xvar_tighten <- gg_md_tighten$topvars[!(gg_md_tighten$topvars %in% 
+                                            c('country', 'quarter'))]
 
 # Variable dependence tighten
 gg_v_tighten <- gg_variable(rt1)
@@ -110,7 +112,8 @@ plot(gg_v_tighten, xvar = xvar_tighten, panel = TRUE)
 partial_bis_tighten <- plot.variable(rt1, xvar = xvar_tighten, partial = TRUE,
                              show.plots = FALSE)
 
-partial_tighten <- plot(gg_partial(partial_bis_tighten), panel = TRUE, alpha = 0.5) +
+partial_tighten <- plot(gg_partial(partial_bis_tighten), panel = TRUE, 
+                        alpha = 0.5) +
                     stat_smooth() + xlab('') +
                     ylab('Predicted Probability of MPR Tightening\n') +
                     xlab('\nPredictor Scale') +
@@ -126,10 +129,11 @@ plot(gg_interaction(interation_tighten), panel = TRUE)
 
 
 # RF for Loosening -------------------------------------------------------------
-rl1 <- rfsrc(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + bis_housing_change +
+rl1 <- rfsrc(any_loosen ~ ~ lag_cumsum_any_tighten + gdp_growth + 
+                 bis_housing_change +
                  inflation + gini_diff_market_net + executive_election_4qt +
-                 finstress_qt_mean + cbi + polconv + polity2 +
-                 country
+                 finstress_qt_mean + cbi + polconv + uds_mean + gdp_per_capita +
+                 country + year + quarter
              , data = dem_no_na_1)
 
 # Minimum variable depth for loosening -------------
@@ -139,7 +143,8 @@ plot(gg_md_loosen) +
     theme_bw()
 
 # Order variables by minimal depth rank (exclude country)
-xvar_loosen <- gg_md_loosen$topvars[!(gg_md_loosen$topvars %in% 'country')]
+xvar_loosen <- gg_md_loosen$topvars[!(gg_md_loosen$topvars %in% 
+                                          c('country', 'quarter'))]
 
 # Partial dependence for tightening -----------
 partial_bis_loosen <- plot.variable(rl1, xvar = xvar_loosen, partial = TRUE,
