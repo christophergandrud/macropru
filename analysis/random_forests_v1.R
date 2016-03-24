@@ -103,7 +103,7 @@ print(xtable(the_sample,
 
 # RF for Tightening MPR -------------------------------------------------------
 rt1 <- rfsrc(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + 
-                 bis_housing_change + 
+                 bis_housing_change +
                  inflation +
                  gini_market + gini_net +
                  redist_relative +

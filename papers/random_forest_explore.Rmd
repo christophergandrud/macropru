@@ -17,6 +17,18 @@ In the aftermath of the global financial crisis, macro-prudential regulatory (MP
 
 \clearpage
 
+# Introduction
+
+[JEFF FILL IN?]
+
+# Economic Conditions and Macro-prudential Policy Choices
+
+[JEFF FILL IN?]
+
+# Political Conditions and Macro-prudential
+
+[JEFF FILL IN?]
+
 # Dependent variables
 
 Our two dependent variables are derived from a new data set of macro-prudential regulatory (MPR) actions created by @dReinhardt2015. Aggregating a number of sources, mostly from IMF staff economists, and supplemented with additional hand-coded incidents, they generated binary quarterly indicators of MPR tightening and loosening for 70 countries between 1990 and 2014. They created dummies for a range of individual MPR instruments including lending standards, reserve requirements, capital regulation, risk weights, underwriting standards, profit distribution, and loan to value ratios.
@@ -102,11 +114,19 @@ It is important to note that the country "fixed effect" had a very low minimal d
 
 To get a sense of the estimated form of the variables' effects on MPR policy tightening, we found their partial dependences with MPR tightening. These are shown in Figure \ref{partial_tighten}. Partial dependence is found by calculating the average prediction from the random forest for each value of $X = x$ variable of interest over all other covariates in $X$ using:[^partialnumber]
 
-$$
-\bar{f}(x) = \frac{1}{n}\sum_{i=1}^{n}\hat{f}(x,\; x_{i,o}).
-$$
+\begin{equation}
+    f(x) = \frac{1}{n}\sum_{i=1}^{n}f(x,\; x_{i,o}).
+\end{equation}
 
-$\hat{f}$ is the predicted MPR policy tightening decision. $x_{i,o}$ is the value for all other covariates than $X=x$ [see @Friedman2000;@Ehrlinger2015, 16]. We can think of partial dependence as the average prediction for a value of one explanatory variable averaged within the joint values of the other predictors [@jones2015, 8], or possibly in more familiar terms: the marginal effect of a variable on the probability of tightening [@Muchlinski2016, 98].
+$f$ is the predicted MPR policy tightening decision. $x$ is the variable for which we want to find the partial dependence and $x_{i,o}$ are the other variables [see @Friedman2000;@Ehrlinger2015, 16]. With binary dependent data the summand here is the log of the fraction of total votes for the classification--the predicted logit--of $y$ defined by:
+
+\begin{equation}
+    f(x) = \mathrm{log}p_{k}(x) - \frac{1}{K}\sum_{j=1}^{K}\mathrm{log}p_{j}(x).
+\end{equation}
+
+$K$ is the number of classes in $y$. $k$ is the predicted class. $p_{j}$ is the proportion of votes for class $j$ [@Muchlinski2016, 99].
+
+In this case, we can think of partial dependence as the average predicted probability of MPR tightening for a value of one explanatory variable averaged within the joint values of the other predictors [@jones2015, 8] or possibly in more familiar terms: the marginal effect of a variable on the probability of tightening [@Muchlinski2016, 98].
 
 \begin{figure}
     \caption{Partial Dependence Plot for Macro-prudential Regulatory Policy Tightening}
@@ -119,15 +139,15 @@ $\hat{f}$ is the predicted MPR policy tightening decision. $x_{i,o}$ is the valu
 
 \end{figure}
 
-GDP Growth appears to have a decidedly non-linear relationship with MPR policy tightening in a manner that we would expect from a model of policy-maker behaviour where they are trying calm asset price bubbles. There is a very low probability of MPR policy tightening at growth levels up to about 5 percent of GDP. From this point, the probability of tightening rises dramatically, reaching about 20 percent per quarter when growth is around 10 percent of GDP.
+Countries with higher central bank policy rates have a higher probability of tightening. There does not appear to be much difference in the low probability of tightening if the policy rate is below about 10 percent. Above this point the predicted probability of tightening increases to between 10 to about 25 percent. This result appears to be largely driven by Brazil which tightened in nine quarters between 2002 and 2010. Brazil was only one of four countries to have such a high policy rate in the estimation sample. One of the other countries--Columbia in 2000 also tightened.[^cbratetighten] As such it appears that countries with less monetary policy room for maneuver, are more likely to resort to macro-prudential tightening. Interestingly, countries with increasing policy rates are also more likely to tighten. This suggests that macro-prudential tightening may be used as a complement to monetary policy tightening.
 
-Housing price changes appear to have a decidedly U-shaped relationship with monetary policy tightening. When housing prices are stable--around zero percent change--there is a low average probability of tightening. Large year-on-year quarterly housing price increases bring the probability of tightening to about 10 percent and above per quarter. This is what we would expect from policy-makers using MPR policy tightening to quell property price bubbles. Interestingly, large housing price declines are also associated with tightening. The countries in the model where housing prices declined more than 5 percent and had tightening included Brazil (quarter 1, 2003), Canada (quarter 4, 2008), Hungary (quarters 1 and 2, 2010), Peru (quarter 3, 2006), and Singapore (quarter 3, 2009). Brazil tightened reserve requirements. Canada, Hungary, and Singapore tightened lending standards, despite falling housing prices. Peru tightened capital requirements. Given the wider context of the Global Financial Crisis in which Canada, Hungary, and Singapore tightened it may be that their tightening was a late date measure to prevent banking system contagion from a crisis that was already hitting economic growth and so housing prices [JEFF DOES THIS MAKE SENSE?]. We see a possible similar Global Financial Crisis effect by looking at the partial dependence for year. The predicted probability of tightening increases markedly for 2010.  
+GDP Growth appears to have a relationship with MPR tightening in a manner that we would expect from a model of policy-makers tightening in an attempt to calm asset price bubbles. There is a very low probability of MPR policy tightening at growth levels up to about 5 percent of GDP. From this point, the probability of tightening rises somewhat, reaching about 15 percent per quarter when growth is around seven percent of GDP.
 
-We can also see that countries appear to be more likely to tighten when there is lower perceived financial market stress as measured by FinStress. This would be the outcome we would expect if policy-makers were using tighter MPR policy to head off future crises, when conditions are still relatively stable.
+Housing price changes appear to have a U-shaped relationship with MPR tightening. When housing prices are stable--around zero percent change--there is a low average probability of tightening. Large year-on-year quarterly housing price increases bring the probability of tightening to a little under 10 percent per quarter. This is what we would expect from policy-makers using MPR policy tightening to quell property price bubbles. Interestingly, large housing price declines are also associated with tightening. The countries in the model where housing prices declined more than 5 percent and had tightening included Brazil (quarter 1, 2003), Canada (quarter 4, 2008), Hungary (quarters 1 and 2, 2010), Peru (quarter 3, 2006), and Singapore (quarter 3, 2009). Brazil tightened reserve requirements. Canada, Hungary, and Singapore tightened lending standards, despite falling housing prices. Peru tightened capital requirements. Given the wider context of the Global Financial Crisis in which Canada, Hungary, and Singapore tightened it may be that their tightening was a late date measure to prevent banking system contagion from a crisis that was already hitting economic growth and so housing prices. We see a possibly similar Global Financial Crisis effect by looking at the partial dependence for the year variable. The predicted probability of tightening increases noticeably from 2008.  
 
-Interestingly, many of the other predictor variables exhibit a broad U-Shaped relationship with macro-prudential regulatory policy tightening. Less democratic countries appear more likely to tighten. In our estimation sample, less democratic countries such as Singapore, Thailand, Malaysia, and Colombia all tightened during the Global Financial Crisis. While we did not find evidence for a macro-prudential electoral cycle, the fact that less democratic countries were more likely to tighten suggests that electoral institutions may have a general effect not tied to the electoral calendar, but to electoral accountability generally. Politicians in more democratic countries may just be under greater pressure from voters to maintain the supply of credit.
+%We can also see that countries appear to be more likely to tighten when there is lower perceived financial market stress as measured by FinStress. This would be the outcome we would expect if policy-makers were using tighter MPR policy to head off future crises, when conditions are still relatively stable.
 
-It is important to note that there are important exceptions to this finding. The highly democratic countries Norway, Sweden, and Switzerland all tightened during the Global Financial Crisis.[^demtight] They may have compensatory institutions that allow then to overcome electoral pressures for easy credit.
+Inequality appears to affect tightening decisions, though not in the way we initially expected. We anticipated that countries with higher inequality, especially even after redistribution,  would be less likely to tighten in order not to alienate less advantaged supporters by reducing their access to credit. However, we found that countries with higher inequality (using both the market and post-redistribution measures) are more likely to tighten. Countries such as Brazil, Colombia, Peru, and Thailand all had Gini scores above 45 (on both measures) and tightened over multiple quarters. Almost all of these countries tightened by increasing reserve requirements. One possible explanation for this seemingly contradictory result is that while there may be political pressures to not tighten in unequal societies, they are also more likely to get into a situation where they need to tighten. They also seem to tighten in such a away--increasing reserve requirements--that does not directly impact borrowers, though presumably such a policy would tighten available credit over the medium-term.
 
 
 ## Random Forests: MPR Loosening
@@ -189,6 +209,8 @@ Many instances of MPR loosening occurred in the more recent period of our sample
 [^partialnumber]: Largely for computational reasons, for variables with many values predictions are made for a subset of the values.
 
 [^rfvisuals]: We used the `ggRandomForests` package [@r-ggRandomForests] for R to find minimum depths and create partial dependence plots shown below.
+
+[^cbratetighten]: The other two countries were Indonesia and South Africa.
 
 [^demtight]: Norway and Sweden tightened lending standards in 2010 and Switzerland tightened leverage limits in 2008.
 
