@@ -37,7 +37,7 @@ keepers <- c('any_tighten', 'lag_cumsum_any_tighten',
 keeper_labels <- c('Any MPR Tightening', 'Cum. Tight. (lag)', 
                    'GDP Growth', 'GDP/Capita', 'Inflation', 'FinStress',
                    'Housing Chng', 'CBI', 'Election',
-                   'Gini Diff.', 'Absolute Redist.', 'UDS')
+                   'Gini Diff.', 'Abs. Redist.', 'UDS')
 
 subbed <- main[, keepers[-1]]
 names(subbed) <- keeper_labels[-1]
@@ -104,14 +104,14 @@ print(xtable(the_sample,
 # RF for Tightening MPR -------------------------------------------------------
 rt1 <- rfsrc(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + 
                  bis_housing_change + 
-                 inflation + ex_regime +
+                 inflation +
                  gini_market + gini_net +
                  redist_relative +
                  executive_election_4qt +
                  cb_policy_rate + cb_policy_rate_change +
                  cbi + polconv + uds_mean + gdp_per_capita +
                  country + year + quarter
-             , data = dem_no_na_1)
+             , data = dem_no_na_1, importance = TRUE)
 
 # Plot OOB errors against the growth of the forest
 plot(gg_error(rt1))
@@ -127,12 +127,20 @@ tighten_md <- plot(gg_md_tighten) +
               #  scale_x_discrete(labels = rev(tighten_md_labels)) +
                 theme_bw()
 
+plot(gg_minimal_vimp(gg_md_tighten))
+
 ggsave(tighten_md, filename = 'papers/figures/tighten_md.pdf', height = 5.82, 
        width = 9.25)
 
 # Order variables by minimal depth rank (exclude country)
-xvar_tighten <- gg_md_tighten$topvars[!(gg_md_tighten$topvars %in% 
-                                            c('country', 'quarter'))]
+#xvar_tighten <- gg_md_tighten$topvars[!(gg_md_tighten$topvars %in% 
+#                                            c('country', 'quarter'))]
+
+# Almost all variables
+xvar_tighten <- gg_md_tighten$varselect$names %>% as.character
+xvar_tighten <- xvar_tighten[!(xvar_tighten %in% c('country', 'quarter',
+                                                   'executive_election_4qt',
+                                                   'ex_regime'))]
 
 # Variable dependence tighten
 gg_v_tighten <- gg_variable(rt1)
