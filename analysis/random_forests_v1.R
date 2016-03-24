@@ -162,7 +162,10 @@ plot(gg_interaction(interation_tighten), panel = TRUE)
 # RF for Loosening -------------------------------------------------------------
 rl1 <- rfsrc(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + 
                  bis_housing_change + 
-                 inflation + gini_diff_market_net + executive_election_4qt +
+                 inflation + ex_regime +
+                 gini_market + gini_net +
+                 redist_relative +
+                 executive_election_4qt +
                  cb_policy_rate + cb_policy_rate_change +
                  cbi + polconv + uds_mean + gdp_per_capita +
                  country + year + quarter
@@ -170,9 +173,11 @@ rl1 <- rfsrc(any_loosen ~ lag_cumsum_any_tighten + gdp_growth +
 
 # Minimum variable depth for loosening -------------
 gg_md_loosen <- gg_minimal_depth(rl1)
-plot(gg_md_loosen) +
-    ggtitle('Minimal Variable Depth for Predicting Any Loosening\n') +
-    theme_bw()
+loosen_md <- plot(gg_md_loosen) +
+                theme_bw()
+
+ggsave(loosen_md, filename = 'papers/figures/loosen_md.pdf', height = 5.82, 
+       width = 9.25)
 
 # Order variables by minimal depth rank (exclude country)
 xvar_loosen <- gg_md_loosen$topvars[!(gg_md_loosen$topvars %in% 
@@ -182,12 +187,16 @@ xvar_loosen <- gg_md_loosen$topvars[!(gg_md_loosen$topvars %in%
 partial_bis_loosen <- plot.variable(rl1, xvar = xvar_loosen, partial = TRUE,
                                      show.plots = FALSE)
 
-plot(gg_partial(partial_bis_loosen), panel = TRUE, alpha = 0.5) +
-    geom_line() + xlab('') +
-    ylab('Predicted Probability\n') +
-    xlab('Predictor Scale\n') +
-    ggtitle('Partial Dependence Panels for MPR Loosening\n') +
-    theme_bw()
+partial_loosen <- plot(gg_partial(partial_bis_loosen), panel = TRUE, 
+                       alpha = 0.5) +
+                        geom_line() + xlab('') +
+                        ylab('Predicted Probability\n') +
+                        xlab('Predictor Scale\n') +
+                    #ggtitle('Partial Dependence Panels for MPR Loosening\n') +
+                        theme_bw()
+
+ggsave(partial_loosen, filename = 'papers/figures/patial_loosen.pdf', 
+       width = 10, height = 8)
 
 # Interactions for loosening -----------
 interaction_loosen <- find.interaction(rl1)

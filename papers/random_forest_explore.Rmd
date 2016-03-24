@@ -115,7 +115,7 @@ $\hat{f}$ is the predicted MPR policy tightening decision. $x_{i,o}$ is the valu
         \includegraphics{figures/patial_tighten.pdf}
     \end{center}
 
-    {\scriptsize{Variables shown are those that were below the minimal debt threshold. Two of the "fixed effect" variables (country and quarter) are also not show. Note that predictions are for policy change to be made per quarter.}}
+    {\scriptsize{Variables shown are those that were below the minimal depth threshold. Two of the "fixed effect" variables (country and quarter) are also not show. Note that predictions are for policy change to be made per quarter.}}
 
 \end{figure}
 
@@ -137,6 +137,27 @@ Given the U-Shaped nature of many of the partial dependence estimates it appears
 
 ## Random Forests: MPR Loosening
 
+\begin{figure}
+    \caption{Minimal Depth For Trees Classifying Macro-prudential Policy Loosening}
+    \label{depth_loosen}
+    \begin{center}
+        \includegraphics{figures/loosen_md.pdf}
+    \end{center}
+
+    {\scriptsize{The dashed vertical line indicates mean minimum depth across the variables. Minimum depths below the mean depth are considered to be important in forest prediction.}}
+
+\end{figure}
+
+\begin{figure}
+    \caption{Partial Dependence Plot for Macro-prudential Regulatory Policy Loosening}
+    \label{partial_loosen}
+    \begin{center}
+        \includegraphics{figures/patial_loosen.pdf}
+    \end{center}
+
+    {\scriptsize{Variables shown are those that were below the minimal depth threshold. The "fixed effects" variables are not shown. Note that predictions are for policy change to be made per quarter.}}
+
+\end{figure}
 
 # Conclusions
 
