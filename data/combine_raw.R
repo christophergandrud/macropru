@@ -266,6 +266,22 @@ ifs <- change(ifs, Var = 'cb_policy_rate', GroupVar = 'country',
 
 FindDups(ifs, c('country', 'year'))
 
+# Exchange rate regime -------------------
+# Coarse classification from Reinhart & Rogoff (2010)
+# Downloaded from: http://www.carmenreinhart.com/data/browse-by-topic/topics/11/
+ex_regime <- import('data/raw/ERA-Annual coarse class.xls', skip = 4)
+
+# Clean up
+names(ex_regime) <- c('year', names(ex_regime[-1]))
+ex_regime <- ex_regime %>% DropNA('year')
+
+ex_regime <- ex_regime %>% gather(country, ex_regime, 2:ncol(ex_regime))
+
+ex_regime$country <- countrycode(ex_regime$country, origin = 'country.name',
+                                 destination = 'country.name')
+
+ex_regime <- ex_regime %>% DropNA(c('country', 'year', 'ex_regime'))
+
 # Combine ------
 comb <- merge(boe, elections_sub, by = c("country", "year_quarter"), 
               all.x = T)
@@ -282,6 +298,7 @@ comb <- dMerge(comb, bis, by = c('country', 'year_quarter'), all = T)
 comb <- dMerge(comb, wdi, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, pol_constraints, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, ifs, by = c('country', 'year'), all.x = T)
+comb <- merge(comb, ex_regime, by = c('country', 'year'), all.x = T)
 comb <- comb %>% arrange(country, year_quarter)
 FindDups(comb, c('country', 'year_quarter'))
 
@@ -334,7 +351,7 @@ comb <- comb %>% MoveFront(c("country", "countrycode", "year",
                              "year_quarter", "quarter"))
 
 # Make sure there are no missing years
-comb$year <- comb$year_quarter %>% round(digits = 0) %>% integer
+comb$year <- comb$year_quarter %>% round(digits = 0) %>% as.integer
 
 comb <- comb %>% select(-standardized_country, -countryname)
 

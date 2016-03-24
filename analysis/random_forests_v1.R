@@ -22,22 +22,22 @@ set_valid_wd(possibles)
 main <- import('data/main_combined.csv')
 
 # Inequality transformations -------
-main$gini_diff_market_net <- main$gini_market - main$gini_net
-main$gini_relative <- (main$gini_diff_market_net / main$gini_market) * 100
+main$redist_absolute <- main$gini_market - main$gini_net
+main$redist_relative <- (main$redist_absolute / main$gini_market) * 100
 main$gini_diff_red <- main$gini_market - main$redist
 
 # Find variable correlations
 keepers <- c('any_tighten', 'lag_cumsum_any_tighten',
              'gdp_growth', 'gdp_per_capita', 'inflation', 
-             'bis_housing_change', 'cbi', 
+             'bis_housing_change', 'cbi',
              'executive_election_4qt', 'cb_policy_rate', 
              'cb_policy_rate_change',
-             'gini_diff_market_net', 'uds_mean')
+             'redist_absolute', 'uds_mean')
 
 keeper_labels <- c('Any MPR Tightening', 'Cum. Tight. (lag)', 
                    'GDP Growth', 'GDP/Capita', 'Inflation', 'FinStress',
                    'Housing Chng', 'CBI', 'Election',
-                   'Gini Diff.', 'UDS')
+                   'Gini Diff.', 'Absolute Redist.', 'UDS')
 
 subbed <- main[, keepers[-1]]
 names(subbed) <- keeper_labels[-1]
@@ -68,7 +68,7 @@ main$mapp <- factor(main$mapp)
 main$mof <- factor(main$mof)
 main$mipp <- factor(main$mipp)
 
-# Rescale DV to get easily interpretable estimates 
+# Rescale DV to get estimates in a sensible interpretable direction
 main$any_tighten[main$any_tighten == 0] <- 4
 main$any_tighten[main$any_tighten == 1] <- 3
 
@@ -104,11 +104,14 @@ print(xtable(the_sample,
 # RF for Tightening MPR -------------------------------------------------------
 rt1 <- rfsrc(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + 
                  bis_housing_change + 
-                 inflation + gini_diff_market_net + executive_election_4qt +
+                 inflation + ex_regime +
+                 gini_market + gini_net +
+                 redist_relative +
+                 executive_election_4qt +
                  cb_policy_rate + cb_policy_rate_change +
                  cbi + polconv + uds_mean + gdp_per_capita +
                  country + year + quarter
-             , data = dem_no_na_1, proximity = TRUE)
+             , data = dem_no_na_1)
 
 # Plot OOB errors against the growth of the forest
 plot(gg_error(rt1))
