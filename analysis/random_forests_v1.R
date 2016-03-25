@@ -29,14 +29,14 @@ main$gini_diff_red <- main$gini_market - main$redist
 # Find variable correlations
 keepers <- c('any_tighten', 'lag_cumsum_any_tighten',
              'gdp_growth', 'gdp_per_capita', 'inflation', 
-             'bis_housing_change', 'cbi',
+             'bis_housing_change', 'cbi', 'bis_credit_change',
              'executive_election_4qt', 'cb_policy_rate', 
              'cb_policy_rate_change',
              'redist_absolute', 'uds_mean')
 
 keeper_labels <- c('Any MPR Tightening', 'Cum. Tight. (lag)', 
                    'GDP Growth', 'GDP/Capita', 'Inflation', 'FinStress',
-                   'Housing Chng', 'CBI', 'Election',
+                   'Housing Chng', 'CBI', 'Election', 'Credit Chng',
                    'Gini Diff.', 'Abs. Redist.', 'UDS')
 
 subbed <- main[, keepers[-1]]
@@ -104,13 +104,18 @@ print(xtable(the_sample,
 # RF for Tightening MPR -------------------------------------------------------
 rt1 <- rfsrc(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + 
                  bis_housing_change +
-                 inflation +
-                 gini_market + gini_net +
+                 bis_credit_change +
+                 #inflation +
+                 #gini_market + 
+                 gini_net +
                  redist_relative +
                  executive_election_4qt +
                  cb_policy_rate + cb_policy_rate_change +
-                 cbi + polconv + uds_mean + gdp_per_capita +
-                 country + year + quarter
+                 cbi + 
+                 #polconv + 
+                 uds_mean + 
+                 country + 
+                 year # + quarter
              , data = dem_no_na_1, importance = TRUE)
 
 # Plot OOB errors against the growth of the forest
@@ -127,10 +132,10 @@ tighten_md <- plot(gg_md_tighten) +
               #  scale_x_discrete(labels = rev(tighten_md_labels)) +
                 theme_bw()
 
-plot(gg_minimal_vimp(gg_md_tighten))
+tighten_md_vimp <- plot(gg_minimal_vimp(gg_md_tighten)) + theme_bw()
 
-ggsave(tighten_md, filename = 'papers/figures/tighten_md.pdf', height = 5.82, 
-       width = 9.25)
+ggsave(tighten_md_vimp, filename = 'papers/figures/tighten_md.pdf', 
+       height = 5.82, width = 9.25)
 
 # Order variables by minimal depth rank (exclude country)
 #xvar_tighten <- gg_md_tighten$topvars[!(gg_md_tighten$topvars %in% 

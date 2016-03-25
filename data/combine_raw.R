@@ -217,6 +217,31 @@ bis$bis_housing_change <- bis$bis_housing_change %>% as.numeric
 bis <- bis %>% arrange(country, year_quarter)
 bis <- bis %>% DropNA('bis_housing_change')
 
+# Credit to the non-financial sector ----------------------------
+# BIS: http://www.bis.org/statistics/totcredit.htm
+bis_credit <- import('data/raw/totcredit.xlsx', sheet = 3, skip = 2)
+
+bis_credit <- bis_credit %>% gather(id, value, 2:ncol(bis_credit))
+bis_credit <- bis_credit %>% DropNA('value')
+
+bis_id <- str_split_fixed(bis_credit$id, pattern = ':', n = 3)
+bis_credit <- cbind(bis_credit, bis_id[, 2:3])
+
+bis_credit$country <- countrycode(bis_credit$`1`, origin = 'iso2c',
+                                  destination = 'country.name')
+
+bis_credit <- bis_credit %>% DropNA('country') %>%
+    filter(`2` == 'C:A:M:770:A')
+bis_credit$year_quarter <- quarter(bis_credit$`Period      `, with_year = TRUE)
+bis_credit <- bis_credit %>% dplyr::select(country, year_quarter, value) %>%
+    rename(bis_credit_non_finance = value)
+
+# Create year-on-year change
+bis_credit <- change(bis_credit, Var = 'bis_credit_non_finance', 
+                     GroupVar = 'country', TimeVar = 'year_quarter', 
+                     NewVar = 'bis_credit_change', slideBy = -4)
+FindDups(bis_credit, c('country', 'year_quarter'))
+
 #  Political Constraints (Henisz) ----------------------------- 
 pol_constraints <- import('data/raw/polcon2012.dta') %>%
                     dplyr::select(polity_country, year, polconiii, polconv)
@@ -295,6 +320,7 @@ comb <- merge(comb, dpi, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, fiscal_trans, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, cbi, by = c('country', 'year'), all.x = T)
 comb <- dMerge(comb, bis, by = c('country', 'year_quarter'), all = T)
+comb <- dMerge(comb, bis_credit, by = c('country', 'year_quarter'), all = T)
 comb <- dMerge(comb, wdi, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, pol_constraints, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, ifs, by = c('country', 'year'), all.x = T)
@@ -346,6 +372,10 @@ comb <- comb %>% arrange(country, year_quarter) %>% group_by(country) %>%
 
 comb <- slide(comb, Var = 'cumsum_any_tighten', GroupVar = 'country', 
               TimeVar = 'year_quarter', NewVar = 'lag_cumsum_any_tighten')
+
+# Lag bis non-financial credit change
+comb <- slide(comb, Var = 'bis_credit_change', GroupVar = 'country', 
+              TimeVar = 'year_quarter', NewVar = 'lag_bis_credit_change')
 
 comb <- comb %>% MoveFront(c("country", "countrycode", "year",
                              "year_quarter", "quarter"))
