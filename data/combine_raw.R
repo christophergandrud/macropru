@@ -15,13 +15,14 @@ library(tidyr)
 library(stringr)
 library(psData)
 library(WDI)
+library(foreign)
 
 # Set working directory
 possibles <- "/git_repositories/macropru/"
 set_valid_wd(possibles)
 
 # Load macro-pru data -------
-boe <- import("data/raw/Data_ReinhardtSowerbutts 2015 BoE WP 546.dta")
+boe <- read.dta("data/raw/Data_ReinhardtSowerbutts 2015 BoE WP 546.dta")
 boe$country <- countrycode(boe$countrycode, origin = "iso3c", 
                            destination = "country.name")
 
@@ -78,11 +79,11 @@ elections <- FindDups(elections, Vars = c("country", "election_date",
 elections <- elections %>% spread(X7, value) %>% arrange(country, election_date)
 
 # Any election
-any_e <- elections %>% select(country, year_quarter)
+any_e <- elections %>% dplyr::select(country, year_quarter)
 any_e$any_election <- 1
 any_e <- any_e %>% FindDups(c('country', 'year_quarter'), NotDups = T)
 
-exec_election <- elections %>% select(country, year_quarter, Executive)
+exec_election <- elections %>% dplyr::select(country, year_quarter, Executive)
 exec_election <- exec_election %>% DropNA('Executive')
 exec_election <- exec_election %>% FindDups(c('country', 'year_quarter'), 
                                             NotDups = T)
@@ -368,6 +369,16 @@ comb <- SpreadDummy(comb, Var = 'any_election', GroupVar = 'country',
 comb <- SpreadDummy(comb, Var = 'executive_election', GroupVar = 'country',
                     NewVar = 'executive_election_4qt', spreadBy = 3)
 
+# Create 4 qtrs after any election dummy
+comb <- SpreadDummy(comb, Var = 'any_election', GroupVar = 'country',
+                    NewVar = 'any_election_4qt_after', spreadBy = -4)
+comb$any_election_4qt_after[comb$any_election == 1] <- 0
+
+# Create 4 qtrs from executive election dummy
+comb <- SpreadDummy(comb, Var = 'executive_election', GroupVar = 'country',
+                    NewVar = 'executive_election_4qt_after', spreadBy = -4)
+comb$executive_election_4qt_after[comb$executive_election == 1] <- 0
+
 # Any tightening
 tighten <- names(comb)[grep("*_Tighten", names(comb))]
 
@@ -401,7 +412,8 @@ comb <- comb %>% MoveFront(c("country", "countrycode", "year",
 # Make sure there are no missing years
 comb$year <- comb$year_quarter %>% round(digits = 0) %>% as.integer
 
-comb <- comb %>% select(-standardized_country, -countryname)
+comb <- comb %>% dplyr::select(-standardized_country, -countryname)
+comb <- comb %>% DropNA('countrycode') # Keep only observations in the BoE data
 
 # Export -----------
 export(comb, file = 'data/main_combined.csv')

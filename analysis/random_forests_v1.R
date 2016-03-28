@@ -13,6 +13,7 @@ library(DataCombine)
 library(randomForestSRC)
 library(ggRandomForests)
 library(ggplot2)
+library(corrplot)
 
 # Set working directory
 possibles <- "/git_repositories/macropru/"
@@ -30,24 +31,26 @@ main$gini_diff_red <- main$gini_market - main$redist
 keepers <- c('any_tighten', 'lag_cumsum_any_tighten',
              'gdp_growth', 'gdp_per_capita', 'inflation', 
              'bis_housing_change',  'bis_credit_change', 'cbi',
-             'executive_election_4qt', 'cb_policy_rate', 
+             'executive_election_4qt', 'executive_election_4qt_after',
+             'cb_policy_rate', 
              'cb_policy_rate_change', 'gini_net',
              'redist_absolute', 'uds_mean')
 
 keeper_labels <- c('Any MPR Tightening', 'Cum. Tight. (lag)', 
                    'GDP Growth', 'GDP/Capita', 'Inflation',
-                   'Housing Chng', 'Credit Chng', 'CBI', 'Election', 
-                   'Policy Rate', 'Policy Rate Chng', 
+                   'Housing Chng', 'Credit Chng', 'CBI', 'Election Period',
+                   'Post-Election',
+                   'Policy Rt', 'Policy Rt Chng', 
                    'Gini Net', 'Abs. Redist.', 'UDS')
 
+# Correlation plot
 subbed <- main[, keepers[-1]]
 names(subbed) <- keeper_labels[-1]
 iv_correlations <- cor(subbed, use = 'complete.obs')
-print(xtable(iv_correlations, 
-      caption = 'Predictor Variable Correlations'),
-      caption.placement = 'top',
-      size = 'tiny',
-      file = 'papers/tables/iv_correlations.tex')
+
+pdf(file = 'papers/figures/corrplot_iv.pdf')
+    corrplot::corrplot(iv_correlations, type = 'lower', method = "ellipse")
+dev.off()
 
 # Set as factors
 main$country <- factor(main$country)
@@ -120,11 +123,12 @@ print(xtable(data.frame(Tighten, Loosen, Total),
 rt1 <- rfsrc(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + 
                  bis_housing_change +
                  bis_credit_change +
-                 #inflation +
+                 inflation +
                  #gini_market + 
                  gini_net +
                  redist_relative +
                  executive_election_4qt +
+                 executive_election_4qt_after +
                  cb_policy_rate + cb_policy_rate_change +
                  cbi + 
                  #polconv + 
@@ -151,6 +155,8 @@ tighten_md <- plot(gg_md_tighten) +
 tighten_md_vimp <- plot(gg_minimal_vimp(gg_md_tighten)) + theme_bw()
 
 tighten_imp <- plot(gg_vimp(rt1)) + 
+             #   scale_colour_manual(values = c("#F98400", "#5BBCD6"), 
+             #                       name = '') +
                 scale_y_continuous(breaks = c(0, 0.01, 0.02)) +
                 theme_bw()
 
@@ -168,8 +174,9 @@ ggsave(tighten_imp, filename = 'papers/figures/tighten_imp.pdf',
 # Almost all variables
 xvar_tighten <- gg_md_tighten$varselect$names %>% as.character
 xvar_tighten <- xvar_tighten[!(xvar_tighten %in% c('country', 'quarter',
-                                                   'executive_election_4qt',
-                                                   'ex_regime'))]
+                                                 'executive_election_4qt',
+                                                 'executive_election_4qt_after',
+                                                 'ex_regime'))]
 
 partial_bis_tighten <- plot.variable(rt1, xvar = xvar_tighten, partial = TRUE,
                              show.plots = FALSE)
@@ -195,11 +202,12 @@ plot(gg_interaction(interation_tighten), panel = TRUE)
 rl1 <- rfsrc(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + 
                  bis_housing_change +
                  bis_credit_change +
-                 #inflation +
+                 inflation +
                  #gini_market + 
                  gini_net +
                  redist_relative +
                  executive_election_4qt +
+                 executive_election_4qt_after +
                  cb_policy_rate + cb_policy_rate_change +
                  cbi + 
                  #polconv + 
@@ -234,8 +242,9 @@ ggsave(loosen_imp, filename = 'papers/figures/loosen_imp.pdf',
 # Almost all variables
 xvar_loosen <- gg_md_loosen$varselect$names %>% as.character
 xvar_loosen <- xvar_loosen[!(xvar_loosen %in% c('country', 'quarter',
-                                                   'executive_election_4qt',
-                                                   'ex_regime'))]
+                                                  'executive_election_4qt',
+                                                  'executive_election_4qt_after',
+                                                  'ex_regime'))]
 
 partial_bis_loosen <- plot.variable(rl1, xvar = xvar_loosen, partial = TRUE,
                                      show.plots = FALSE)
