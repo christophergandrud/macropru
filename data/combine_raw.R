@@ -158,14 +158,32 @@ fiscal_trans <- fiscal_trans %>% gather(year, fiscal_trans_gfs,
 # Bodea and Hicks CBI -------------
 # Downloaded from http://www.princeton.edu/~rhicks/data.html
 cbi <- foreign::read.dta('data/raw/cb_rh_iodata.dta')
-cbi$country <- countrycode(cbi$cowcode, origin = 'cown',
-                                    destination = 'country.name')
 
-## No EU
-cbi <- cbi %>% DropNA('country')
+## Eurozone
+eurozone_cbi <- cbi %>% filter(countryname == 'European Union') %>% 
+                    select(-countryname)
+
+euro_member <- import('https://raw.githubusercontent.com/christophergandrud/euro_membership/master/data/euro_membership_data.csv')
+
+euro_cbi <- merge(euro_member, eurozone_cbi, by = 'year') %>%
+                select(country, year, lvau, lvaw)
+
+cbi$country <- countrycode(cbi$cowcode, origin = 'cown',
+                           destination = 'country.name')
 
 cbi <- cbi %>% select(country, year, lvau, lvaw)
+cbi <- rbind(cbi, euro_cbi) %>% arrange(country, year)
+
 cbi <- cbi %>% rename(cbi = lvau) %>% rename(cbi_weighted = lvaw)
+
+cbi <- cbi %>% DropNA(c('country', 'cbi'))
+cbi <- FindDups(cbi, c('country', 'year'), NotDups = TRUE)
+
+## Assume CBI is constant from 2010 through 2011
+cbi_2011 <- cbi %>% filter(year == 2010)
+cbi_2011$year <- 2011
+
+cbi <- rbind(cbi, cbi_2011) %>% arrange(country, year)
 
 # WDI -------------
 wdi <- WDI(indicator = c('NY.GDP.MKTP.KD.ZG', 'FP.CPI.TOTL.ZG', 'SI.POV.GINI',
