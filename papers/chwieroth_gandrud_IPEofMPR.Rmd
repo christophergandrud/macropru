@@ -132,7 +132,7 @@ $f$ is the predicted MPR tightening decision. $x$ is the variable for which we w
 
 $K$ is the number of classes in $y$. $k$ is the predicted class. $p_{j}$ is the proportion of votes for class $j$ [@Muchlinski2016, 99]. We can think of partial dependence as the average predicted probability of MPR tightening for a value of one explanatory variable averaged within the joint values of the other predictors [@jones2015, 8] or possibly in more familiar terms: the marginal effect of a variable on the probability of tightening [@Muchlinski2016, 98].
 
-Before examining the partial dependences, it is important to consider how each variable's degree of time variance shapes the magnitude of its estimated effect. All else equal, we would expect time-variant variables--such as GDP growth and credit provision--to have a larger impact on the predicted probability of tightening in a given quarter than  time-invariant factors--such as CBI and democracy. Higher values of variables that change considerably over time will affect the quarterly probability more as the average effect of a high value is created from an average of relatively short high value periods that could closely correspond with events prompting a policy change. Time-invariant variables' affects are found by averaging over the entire observation period, so the partial dependence would tend to be lower all else equal.
+Before examining the partial dependences in Figure \ref{partial_tighten},[^rfvisuals] it is important to consider how each variable's degree of time variance shapes the magnitude of its estimated effect. All else equal, we would expect time-variant variables--such as GDP growth and credit provision--to have a larger impact on the predicted probability of tightening in a given quarter than  time-invariant factors--such as CBI and democracy. Higher values of variables that change considerably over time will affect the quarterly probability more as the average effect of a high value is created from an average of relatively short high value periods that could closely correspond with events prompting a policy change. Time-invariant variables' affects are found by averaging over the entire observation period, so the partial dependence would tend to be lower all else equal.
 
 \begin{figure}
     \caption{Partial Dependence Plot for Macro-prudential Regulatory Policy Tightening}
@@ -241,7 +241,7 @@ It is nonetheless very important to note that these findings are based on a rela
 
 # Online Appendix: minimal depth importance measure
 
-Figures \ref{depth_tighten} and \ref{depth_loosen} show the minimal depths for each variable included in our two random forest models. The assumption behind these plots is that variables have a higher impact on predicting MPR tightening if they more frequently split nodes closest to the "trunk" of the tree, i.e. the root node [@Ehrlinger2015, 11]. So a lower minimal depth indicates that the variable is more important for predicting the MPR choice. Using the rule developed by @Ishwaran2010, minimum depth values below the mean minimum depth across the variables indicate variables that are important for predicting MPR choices.[^rfvisuals]
+Figures \ref{depth_tighten} and \ref{depth_loosen} show the minimal depths for each variable included in our two random forest models as an alternative to permutation importance. The assumption behind these plots is that variables have a higher impact on predicting MPR tightening if they more frequently split nodes closer to the "trunk" of the tree, i.e. the root node [@Ehrlinger2015, 11]. Lower minimum depths indicate that a variable is more important for predicting the MPR choice. Using the threshold rule developed by @Ishwaran2010, minimum depth values below the mean minimum depth across the variables indicate variables that are important for predicting MPR choices. This threshold is represented in figures \ref{depth_tighten} and \ref{depth_loosen} by the dashed vertical line.
 
 \begin{figure}
     \caption{Minimal Depth For Trees Classifying Macro-prudential Policy Tightening}
@@ -289,6 +289,33 @@ All of these issues are symptomatic of estimating logistic regressions on rare e
 
 \clearpage
 
+# Online Appendix: Exploring possible interactions
+
+One advantage of random forests is that we can explore many possible interactions between our predictors [@jones2015, 18-21]. To test for possible interactions in our random forest model we used a method that builds on the minimal depth approach [@Ishwaran2010]. We constructed a $p \times p$ matrix, where $p$ is the number of predictors. The diagonal is the (normalised) minimal depth relative to the root node. Each off diagonal term is the minimal depth term relative to the diagonal in that row. Small off diagonal term values indicate that the term splits close to the diagonal term [@Ehrlinger2015, 17-19], i.e. that there is an interaction between the two variables.
+
+We visualise these matrices in figures \ref{interact_tighten} and \ref{interact_loosen}.[^interactmake] The red crosses indicate the diagonal values and the other points show the interaction scores. Based on these plots, there is little evidence for pairwise interactions in our models.
+
+\begin{figure}[H]
+    \caption{Minimal Depth Variable Interactions for MPR Tightening}
+    \label{interact_tighten}
+    \begin{center}
+        \includegraphics{figures/interaction_check_tighten.pdf}
+    \end{center}
+    {\scriptsize{Red crosses indicate diagonal minimal depth values. \\
+    All other points are the interaction scores.}}
+\end{figure}
+
+\begin{figure}[H]
+    \caption{Minimal Depth Variable Interactions for MPR Loosening}
+    \label{interact_loosen}
+    \begin{center}
+        \includegraphics{figures/interaction_check_loosen.pdf}
+    \end{center}
+    {\scriptsize{Red crosses indicate diagonal minimal depth values. \\
+    All other points are the interaction scores.}}
+
+\end{figure}
+
 # References
 
 [^authors]: Jeffrey Chweiroth is a Professor of International Political Economy at the London School of Economics (j.m.chwieroth@lse.ac.uk). Christopher Gandrud is a Lecturer of Quantitative International Political Economy at City University London and Post-doctoral Fellow at the Hertie School of Governance (christopher.gandrud@city.ac.uk). All data and code needed to replicate these analyses are available at: <https://github.com/christophergandrud/macropru>.
@@ -309,7 +336,7 @@ All of these issues are symptomatic of estimating logistic regressions on rare e
 
 [^partialnumber]: Largely for computational reasons, for variables with many values predictions are made for a subset of the values.
 
-[^rfvisuals]: We used the `ggRandomForests` package [@r-ggRandomForests] for R to find minimum depths and create partial dependence plots shown below.
+[^rfvisuals]: We used the `ggRandomForests` package [@r-ggRandomForests] for R to create partial dependence plots. We also use it to find minimum depths shown in the Online Appendix.
 
 [^cbratetighten]: Due to missing data, the Colombia event was not included in the estimation sample.  The other two countries were Indonesia and South Africa.
 
@@ -320,3 +347,5 @@ All of these issues are symptomatic of estimating logistic regressions on rare e
 [^binarymapp]: @lim2013 created dummy versions of their four category indexes which were one if the central bank or in an alternative measure, ministry of finance, was exclusively responsible for MPR or chaired the MPR decision-making body.  
 
 [^bayesglm]: We ran this analysis using the `bayesglm` function from the R `arm` package [@r-arm].
+
+[^interactmake]: We used the `ggRandomForests` package for R to create these plots.

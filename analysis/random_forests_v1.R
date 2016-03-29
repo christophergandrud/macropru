@@ -95,8 +95,15 @@ ggsave(partial_tighten, filename = 'papers/figures/patial_tighten.pdf',
 # Interactions for tightening -----------
 interation_tighten <- find.interaction(rt1)
 
-plot(gg_interaction(interation_tighten), panel = TRUE)
+interact_tighten_plot <- plot(gg_interaction(interation_tighten), 
+                         panel = TRUE) + 
+                        theme_bw() +
+                        theme(axis.text.x = element_text(
+                            angle = 90))
 
+ggsave(interact_tighten_plot, 
+       filename = 'papers/figures/interaction_check_tighten.pdf',
+       width = 10, height = 9)
 
 # RF for Loosening -------------------------------------------------------------
 rl1 <- rfsrc(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + 
@@ -163,4 +170,12 @@ ggsave(partial_loosen, filename = 'papers/figures/patial_loosen.pdf',
 # Interactions for loosening -----------
 interaction_loosen <- find.interaction(rl1)
 
-plot(gg_interaction(interaction_loosen), panel = TRUE)
+interact_loosen_plot <- plot(gg_interaction(interaction_loosen), 
+                         panel = TRUE) + 
+                        theme_bw() +
+                        theme(axis.text.x = element_text(
+                            angle = 90))
+
+ggsave(interact_loosen_plot, 
+       filename = 'papers/figures/interaction_check_loosen.pdf',
+       width = 10, height = 8)
