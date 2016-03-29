@@ -51,7 +51,10 @@ pdf(file = 'papers/figures/corrplot_iv.pdf')
 dev.off()
 
 # Missingness map -----------------
-data_for_missing <- main[, c('country', 'year_quarter', keepers[-1])]
+data_for_missing <- main[, c('country', 'year_quarter', 
+                             'finstress_qt_mean', 'mapp', 'mof',
+                             'domestic_credit',
+                             keepers[-1])]
 
 pdf(file = 'papers/figures/missing_map.pdf')
     missmap(data_for_missing, csvar = 'country', tsvar = 'year_quarter',
@@ -107,7 +110,8 @@ the_sample <- dem_no_na_1 %>% group_by(country) %>%
     rename(Country = country)
 
 print(xtable(the_sample, 
-             caption = 'Country Quarter-Year Sample Included in the Random Forests After Deleting Cases with Missing Values'),
+             caption = 'Country Quarter-Year Sample Included in the Random Forests After Deleting Cases with Missing Values',
+             label = 'sampcases'),
       caption.placement = 'top',
       include.rownames = FALSE,
       file = 'papers/tables/rf_sample.tex')
@@ -118,7 +122,8 @@ Loosen <- summary(dem_no_na_1$any_loosen)[[1]]
 Total <- nrow(dem_no_na_1)
 
 print(xtable(data.frame(Tighten, Loosen, Total),
-             caption = 'Number of Events and Total Observations for the Estimation Sample'),
+             caption = 'Number of Events and Total Observations for the Estimation Sample',
+             label = 'sampsize'),
       caption.placement = 'top',
       include.rownames = FALSE,
       file = 'papers/tables/rf_sample_size.tex'
