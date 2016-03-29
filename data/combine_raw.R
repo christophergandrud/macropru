@@ -156,7 +156,7 @@ fiscal_trans <- fiscal_trans %>% gather(year, fiscal_trans_gfs,
                                         2:ncol(fiscal_trans)) %>%
                     arrange(country, year)
 
-# Bodea and Hicks CBI -------------
+# CBI (Bodea and Hicks) -------------
 # Downloaded from http://www.princeton.edu/~rhicks/data.html
 cbi <- foreign::read.dta('data/raw/cb_rh_iodata.dta')
 
@@ -180,11 +180,14 @@ cbi <- cbi %>% rename(cbi = lvau) %>% rename(cbi_weighted = lvaw)
 cbi <- cbi %>% DropNA(c('country', 'cbi'))
 cbi <- FindDups(cbi, c('country', 'year'), NotDups = TRUE)
 
-## Assume CBI is constant from 2010 through 2011
-cbi_2011 <- cbi %>% filter(year == 2010)
-cbi_2011$year <- 2011
+## Assume CBI is constant from 2010 through 2014
+extender <- function(df, year_original, year_new) {
+    temp <- df %>% filter(year == year_original)
+    temp$year <- year_new
+    df <- rbind(df, temp) %>% arrange(country, year)
+}
 
-cbi <- rbind(cbi, cbi_2011) %>% arrange(country, year)
+for (i in 2011:2014) cbi <- extender(cbi, year_original = 2010, year_new = i)
 
 # WDI -------------
 wdi <- WDI(indicator = c('NY.GDP.MKTP.KD.ZG', 'FP.CPI.TOTL.ZG', 'SI.POV.GINI',

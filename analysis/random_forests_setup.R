@@ -47,15 +47,15 @@ names(subbed) <- keeper_labels[-1]
 iv_correlations <- cor(subbed, use = 'complete.obs')
 
 pdf(file = 'papers/figures/corrplot_iv.pdf')
-corrplot::corrplot(iv_correlations, type = 'lower', method = "ellipse")
+    corrplot::corrplot(iv_correlations, type = 'lower', method = "ellipse")
 dev.off()
 
 # Missingness map -----------------
 data_for_missing <- main[, c('country', 'year_quarter', keepers[-1])]
 
 pdf(file = 'papers/figures/missing_map.pdf')
-missmap(data_for_missing, csvar = 'country', tsvar = 'year_quarter',
-        main = '', y.cex = 0.5, x.cex = 0.5)
+    missmap(data_for_missing, csvar = 'country', tsvar = 'year_quarter',
+            main = '', y.cex = 0.5, x.cex = 0.5)
 dev.off()
 
 # Set as factors -----------------
