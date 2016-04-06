@@ -323,7 +323,7 @@ We visualise these matrices in figures \ref{interact_tighten} and \ref{interact_
 
 # References
 
-[^authors]: Jeffrey Chweiroth is a Professor of International Political Economy at the London School of Economics (j.m.chwieroth@lse.ac.uk). Christopher Gandrud is a Lecturer of Quantitative International Political Economy at City University London and Post-doctoral Fellow at the Hertie School of Governance (christopher.gandrud@city.ac.uk). Replication material is available at: <https://github.com/christophergandrud/macropru>.
+[^authors]: Jeffrey Chweiroth is a Professor of International Political Economy at the London School of Economics (j.m.chwieroth@lse.ac.uk). Christopher Gandrud is a Lecturer of Quantitative International Political Economy at City University London and Post-doctoral Fellow at the Hertie School of Governance (christopher.gandrud@city.ac.uk). Thank you to the London IPE Society for helpful comments. Replication material is available at: <https://github.com/christophergandrud/macropru>.
 
 [^hyde4]: We used Version 4 of the data set.
 
