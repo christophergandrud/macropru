@@ -89,7 +89,7 @@ partial_tighten <- plot(gg_partial(partial_bis_tighten), panel = TRUE,
                     theme_bw()
 
 ggsave(partial_tighten, filename = 'papers/figures/patial_tighten.pdf', 
-       width = 10, height = 8)
+       width = 12, height = 8)
 
 # Interactions for tightening -----------
 interation_tighten <- find.interaction(rt1)

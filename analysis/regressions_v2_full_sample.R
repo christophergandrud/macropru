@@ -85,6 +85,13 @@ texreg(est_tighten,
        file = 'papers/tables/stepwise_bayeslogit_no_bis.tex'
 )
 
+# Democracy and elections interaction 
+t8 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +
+                   cbi + 
+                   uds_mean*executive_election_4qt + uds_mean*executive_election_4qt_after +
+                   country + year
+               , data = main, family = binomial(link = 'logit'))
+
 
 # Simple logistic regressions tightening (BIS variables) --------
 tb1 <- bayesglm(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + inflation +

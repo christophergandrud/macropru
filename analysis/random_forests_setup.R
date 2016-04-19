@@ -63,7 +63,7 @@ dev.off()
 
 # Set as factors -----------------
 main$country <- factor(main$country)
-# main$year <- as.factor(main$year)
+#main$year <- as.integer(main$year)
 # main$quarter <- as.factor(main$quarter)
 main$executive_election_4qt <- factor(main$executive_election_4qt)
 
