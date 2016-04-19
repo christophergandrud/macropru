@@ -16,6 +16,7 @@ library(stringr)
 library(psData)
 library(WDI)
 library(foreign)
+library(fredr) # if not installed use devtools::install_github('christophergandrud/fredr')
 
 # Set working directory
 possibles <- "/git_repositories/macropru/"
@@ -329,6 +330,15 @@ ex_regime$country <- countrycode(ex_regime$country, origin = 'country.name',
 
 ex_regime <- ex_regime %>% DropNA(c('country', 'year', 'ex_regime'))
 
+# US Fed Funds Rate (from FRED database) --------------
+fed_funds <- fred_loop(single_symbol = 'FEDFUNDS', var_name = 'us_fed_funds')
+
+# Find quarter averages
+fed_funds$year_quarter <- quarter(fed_funds$date, with_year = TRUE)
+
+fed_funds <- fed_funds %>% group_by(year_quarter) %>%
+                summarise(us_fed_funds = mean(us_fed_funds))
+
 # Combine ------
 comb <- merge(boe, elections_sub, by = c("country", "year_quarter"), 
               all.x = T)
@@ -347,6 +357,7 @@ comb <- dMerge(comb, wdi, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, pol_constraints, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, ifs, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, ex_regime, by = c('country', 'year'), all.x = T)
+comb <- merge(comb, fed_funds, by = c('year_quarter'), all.x = T)
 comb <- comb %>% arrange(country, year_quarter)
 FindDups(comb, c('country', 'year_quarter'))
 
@@ -360,7 +371,7 @@ for (i in 5:7) {
     comb[, i][is.na(comb[, i])] <- 0
 }
 
-# Clean  elections variable
+# Clean elections variable
 comb$any_election[is.na(comb$any_election)] <- 0
 comb$executive_election[is.na(comb$executive_election)] <- 0
 

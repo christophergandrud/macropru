@@ -18,38 +18,37 @@ set_valid_wd(possibles)
 source('analysis/random_forests_setup.R')
 
 
+# Keep only main model variables and rename
+vars_model <- c('any_tighten', 'lag_cumsum_any_tighten', 'gdp_growth',
+                'us_fed_funds', 'bis_housing_change', 'cb_policy_rate',
+                'uds_mean', 'bis_credit_change', 'gini_net', 
+                'inflation', 'redist_relative', 'cb_policy_rate_change', 
+                'cbi', 'executive_election_4qt', 'executive_election_4qt_after',
+                'country', 'year')
+
+main_var_sub <- dem_no_na_1[, vars_model]
+
+# Minimum variable depth for tightening -------------
+tighten_md_labels <- c('any_tighten', 'Cum. Tight. (lag)', 'GDP Growth',  
+                       'Fed Funds', 'Housing Chng', 'CB Policy Rt',
+                       'UDS', 'Credit Chng', 'Gini Net',
+                       'Inflation', 'Rel. Redist.', 'CB Policy Rt Chng',
+                       'CBI', 'Pre-election', 'Post-election', 
+                       'Country', 'Year')
+
+names(main_var_sub) <- tighten_md_labels
+
 # RF for Tightening MPR -------------------------------------------------------
-rt1 <- rfsrc(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + 
-                 bis_housing_change +
-                 bis_credit_change +
-                 inflation +
-                 #finstress_qt_mean + 
-                 #gini_market + 
-                 gini_net +
-                 redist_relative +
-                 executive_election_4qt +
-                 executive_election_4qt_after +
-                 cb_policy_rate + cb_policy_rate_change +
-                 cbi + 
-                 #polconv + 
-                 uds_mean + 
-                 country + 
-                 year # + quarter
-             , data = dem_no_na_1, importance = TRUE)
+rt1 <- rfsrc(any_tighten ~ .
+             , data = main_var_sub, importance = TRUE)
 
 # Plot OOB errors against the growth of the forest
 plot(gg_error(rt1))
 
-# Minimum variable depth for tightening -------------
-tighten_md_labels <- c('GDP Growth', 'Country', 'Housing Price Chng', 
-                       'Cum. Tight. (lag)', 'FinStress', 'Democracy',
-                       'GDP/Capita', 'Gini Diff.', 'Inflation', 'CBI',
-                       'Political Constraints', 'Election')
-
-# Minimum depth
+# Minimum depth for tightening ------
 gg_md_tighten <- gg_minimal_depth(rt1)
 tighten_md <- plot(gg_md_tighten) +
-              #  scale_x_discrete(labels = rev(tighten_md_labels)) +
+               # scale_x_discrete(labels = rev(tighten_md_labels)) +
                 theme_bw()
 
 tighten_md_vimp <- plot(gg_minimal_vimp(gg_md_tighten)) + theme_bw()
@@ -73,9 +72,9 @@ ggsave(tighten_imp, filename = 'papers/figures/tighten_imp.pdf',
 # Partial dependence for tightening -----------
 # Almost all variables
 xvar_tighten <- gg_md_tighten$varselect$names %>% as.character
-xvar_tighten <- xvar_tighten[!(xvar_tighten %in% c('country', 'quarter',
-                                                 'executive_election_4qt',
-                                                 'executive_election_4qt_after',
+xvar_tighten <- xvar_tighten[!(xvar_tighten %in% c('Country', 'Quarter',
+                                                 'Pre-election',
+                                                 'Post-election',
                                                  'ex_regime'))]
 
 partial_bis_tighten <- plot.variable(rt1, xvar = xvar_tighten, partial = TRUE,
@@ -105,11 +104,14 @@ ggsave(interact_tighten_plot,
        filename = 'papers/figures/interaction_check_tighten.pdf',
        width = 10, height = 9)
 
-# RF for Loosening -------------------------------------------------------------
-rl1 <- rfsrc(any_loosen ~ lag_cumsum_any_tighten + gdp_growth + 
-                 bis_housing_change +
-                 bis_credit_change +
+# RF for Tightening MPR (No BIS) -----------------------------------------------
+rt2 <- rfsrc(any_tighten ~ lag_cumsum_any_tighten + gdp_growth + 
+                 #   bis_housing_change +
+                 #   bis_credit_change +
+                 domestic_credit_change +
                  inflation +
+                 us_fed_funds +
+                 #finstress_qt_mean + 
                  #gini_market + 
                  gini_net +
                  redist_relative +
@@ -122,6 +124,25 @@ rl1 <- rfsrc(any_loosen ~ lag_cumsum_any_tighten + gdp_growth +
                  country + 
                  year # + quarter
              , data = dem_no_na_1, importance = TRUE)
+
+# Minimum variable depth for tightening (no BIS) -------------
+tighten_md_labels <- c('GDP Growth', 'Country', 'Housing Price Chng', 
+                       'Cum. Tight. (lag)', 'FinStress', 'Democracy',
+                       'GDP/Capita', 'Gini Diff.', 'Inflation', 'CBI',
+                       'Political Constraints', 'Election')
+
+# Minimum depth
+gg_md_tighten2 <- gg_minimal_depth(rt2)
+tighten_md2 <- plot(gg_md_tighten2) +
+    #  scale_x_discrete(labels = rev(tighten_md_labels)) +
+    theme_bw()
+
+ggsave(tighten_md2, filename = 'papers/figures/tighten_md_no_bis.pdf', 
+       height = 5.82, width = 9.25)
+
+# RF for Loosening -------------------------------------------------------------
+rl1 <- rfsrc(any_loosen ~ .
+             , data = main_var_sub, importance = TRUE)
 
 # Minimum variable depth for loosening -------------
 gg_md_loosen <- gg_minimal_depth(rl1)

@@ -32,14 +32,14 @@ keepers <- c('any_tighten', 'lag_cumsum_any_tighten',
              'executive_election_4qt', 'executive_election_4qt_after',
              'cb_policy_rate',
              'cb_policy_rate_change', 'gini_net',
-             'redist_absolute', 'uds_mean')
+             'redist_absolute', 'uds_mean', 'us_fed_funds')
 
 keeper_labels <- c('Any MPR Tightening', 'Cum. Tight. (lag)', 
                    'GDP Growth', 'GDP/Capita', 'Inflation',
                    'Housing Chng', 'Credit Chng', 'CBI', 'Election Period',
                    'Post-Election',
                    'Policy Rt', 'Policy Rt Chng', 
-                   'Gini Net', 'Abs. Redist.', 'UDS')
+                   'Gini Net', 'Abs. Redist.', 'UDS', 'Fed Funds Rate')
 
 # Correlation plot
 subbed <- main[, keepers[-1]]
@@ -122,7 +122,7 @@ Loosen <- summary(dem_no_na_1$any_loosen)[[1]]
 Total <- nrow(dem_no_na_1)
 
 print(xtable(data.frame(Tighten, Loosen, Total),
-             caption = 'Number of Events and Total Observations for the Estimation Sample',
+             caption = 'Number of Events and Total Observations for the Random Forests Estimation Sample',
              label = 'sampsize'),
       caption.placement = 'top',
       include.rownames = FALSE,

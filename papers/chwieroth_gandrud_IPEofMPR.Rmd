@@ -16,10 +16,10 @@ output:
 bibliography: main.bib
 ---
 
-**Incomplete working draft** containing **preliminary** results. Comments welcome.[^authors]
+**Early working draft** containing **preliminary** results. Comments welcome.[^authors]
 
 \begin{abstract}
-In the aftermath of the global financial crisis, macro-prudential regulatory (MPR) tools, which aim to limit the build-up of systemic risk and the macroeconomic costs of financial instability, have gained widespread attention. An important element of MPR tools involves implementing counter-cyclical regulatory measures to dampen credit cycles. Yet the political dynamics of MPR tools are potentially complicated in that their implementation involves moving against market and public sentiment during boom periods as well as affecting who can obtain access to financing. The use of MPR tools can be highly and conspicuously distributional, thus potentially constraining their use and effectiveness. In many cases, the allocation of MPR responsibilities to hitherto independent central banks creates additional concerns about the nature of their accountability relationship with the rest of the political process and the public at large. To shed light on these critical issues, we provide the first cross-national statistical political economy analysis of MPR implementation. Our analysis assesses the relative importance of political credit cycles, institutional demands, and societal demands for credit tightening and easing. Contrary to our expectations, we find little evidence for political MPR cycles or that central bank independence plays an important role in shaping MPR decisions. This finding has important implications for debates about possible tradeoffs between MPR democratic accountability and effectiveness.
+In the aftermath of the global financial crisis, macro-prudential regulatory (MPR) tools, which aim to limit the build-up of systemic risk and the macroeconomic costs of financial instability, have gained widespread attention. An important element of MPR tools involves implementing counter-cyclical regulatory measures to dampen credit cycles. Yet the political dynamics of MPR tools are potentially complicated in that their implementation involves moving against market and public sentiment during boom periods as well as affecting who can obtain access to financing. The use of MPR tools can be highly and conspicuously distributional, thus potentially constraining their use and effectiveness. In many cases, the allocation of MPR responsibilities to hitherto independent central banks creates additional concerns about the nature of their accountability relationship with the rest of the political process and the public at large. To shed light on these critical issues, we provide the first cross-national statistical political economy analysis of MPR implementation. Our analysis assesses the relative importance of political credit cycles, institutional designs, and societal demands for credit tightening and easing. Contrary to our expectations, we find little evidence for political MPR cycles and weak evidence that central bank independence plays an important role in shaping MPR decisions. This finding has important implications for debates about possible tradeoffs between MPR democratic accountability and effectiveness.
 \end{abstract}
 
 # Introduction
@@ -28,21 +28,15 @@ In the wake of the global financial crisis, politicians, regulators, and central
 
 However, we presently lack a coherent understanding of the context-specific political constraints that may shape what macro-prudential tools are actually used and how. These constraints may dramatically limit what tools are feasible in a given context and could lead to unintended negative consequences. For example, as part of the shift to a focus on macro-prudential and counter-cyclical regulation, central banks in a number of places, such as the United States, United Kingdom, and the Eurozone, have been given greater regulatory authority. These central banks have previously been seen as very successful in fighting inflation. However, it is uncertain if this success will transfer over to the newly created macro-prudential regulations. Macro-prudential regulation could be a much more politicised issue than monetary policy in these contexts. Regulators may be biased either towards non-intervention, because they would be subject to political pressure against tightening during a boom, or towards intervention, because they would face less criticism for puncturing a non-bubble than for failing to spot a real one. Perceived regulatory failures could end up eroding the reputations of central banks, thus damaging their ability to curtail inflation.
 
-The existing literature says little about the salient political features that shape how regulators respond to these pressures. We thus need a better understanding of how the political economy context shapes macro-prudential regulatory systems. In this paper we make the first attempt at doing this by employing random forest classification to examine what political, institutional, and economic factors affect policy-makers' decisions to tighten and loosen monetary policy.
+The existing literature says little about the salient political features that shape how regulators respond to these pressures. We thus need a better understanding of how the political economy context shapes macro-prudential regulatory systems. In this paper we make the first attempt at doing this by employing random forest classification to examine what political, institutional, and economic factors affect policy-makers' decisions to tighten monetary policy.
 
-# Economic Conditions and Macro-prudential Regulatory Choices
-
-[TO COMPLETE]
-
-# Political Conditions and Macro-prudential Regulatory Choices
-
-[TO COMPLETE]
+At this preliminary stage of our research we begin directly with the discussion of our empirical model including included variables and our theoretical reasoning for their inclusion, as well as estimation strategy and preliminary results. It is important to emphasise that we regard these these results as preliminary, not least of of all because considerable work needs to be done to find missing data for important cases that we currently can not include.
 
 # Dependent variables
 
 To better understand how economic and political factors may influence macro-prudential regulatory decisions, we create two dependent variables derived from a new data set of MPR policies compiled by @dReinhardt2015. Aggregating a number of sources, mostly from IMF staff economists, and supplemented with additional hand-coded incidents, they generated quarterly indicators of MPR tightening and loosening for 64 countries between 2000 and 2014. These indicators are binary measures of tightening and loosening decisions for a range of individual MPR instruments including lending standards, reserve requirements, capital regulation, risk weights, underwriting standards, profit distribution, and loan to value ratios.
 
-The use of some of these policies is rarely observed in the sample. So, we aggregated the data into two binary variables that we use as our dependent variables. One variable captures if a country took an action that @dReinhardt2015 classified as **MPR tightening** in a given quarter. The other variable captures **MPR loosening**. These variables equal one for each country-quarter that any macro-prudential regulation was tightened or loosened, respectively, and zero otherwise. Figure \ref{describe_cumsum} shows the cumulative sum (from the year 2000) of these policies' use in each country-quarter in our sample. See also Figure \ref{cumsum_all} in the Online Appendix for an aggregated view of the policy trends across all countries.
+The use of some of these policies is rarely observed in the sample. So, we aggregated the data into a binary variable that we use as our dependent variable. The variable captures if a country took an action that @dReinhardt2015 classified as **MPR tightening** in a given quarter. This variable equals one for each country-quarter that any macro-prudential regulation was tightened and zero otherwise. Figure \ref{describe_cumsum} shows the cumulative sum (from the year 2000) of these policies' use in each country-quarter in our sample. See also Figure \ref{cumsum_all} in the Online Appendix for an aggregated view of the policy trends across all countries. We also created a similar variable of **MPR loosening**. However, there were many fewer observations in our full sample when considering missing-ness of the explanatory variables so we do not discuss results from models with this variable in the main text. Please see the Online Appendix for details.
 
 \begin{landscape}
 \begin{figure}
@@ -57,7 +51,7 @@ The use of some of these policies is rarely observed in the sample. So, we aggre
 
 # Potential explanatory variables
 
-There are a number of economic and political factors that may affect decisions to tighten and loosen macro-prudential regulation. Note that we discuss all of the variables we examined even those we ultimately did not include in the estimation models shown below. Typically variables were excluded due to high missingness. Please see Figure \ref{missing_map} in the Online Appendix for an overview of the missing values.
+There are a number of economic and political factors that may affect decisions to tighten and loosen macro-prudential regulation. Note that we discuss all of the variables we examined even those we ultimately did not include in the estimation models shown below. Typically variables were excluded due to high missing-ness. Please see Figure \ref{missing_map} in the Online Appendix for an overview of the missing values.
 
 ## Economic conditions
 
@@ -67,11 +61,13 @@ Similarly, governments may be more likely to tighten when there are credit bubbl
 
 As macro-prudential regulation is broadly an attempt to strengthen financial markets, it is important to include the financial market stress policy-makers perceived in real-time. To do this we use the **FinStress** measure from @GandrudHallbergFinStress. They created a real-time indicator of financial market stress for over 180 countries between 2003 and 2011 using a text analysis of *Economist Intelligence Unit* monthly country reports. The variable ranges from zero (low stress) to one (high stress). We converted this monthly variable to country-quarter averages. We do not include FinStress in the models below because it shrinks the time period of our sample and does not substantially change the model results. In models that do include FinStress, countries are more likely to tighten MPR when FinStress is lower. This is consistent with an approach to macro-prudential regulation that aims to prevent trouble in the future.
 
-We examined a number of other economic indicators from the World Bank's Development Indicators [WDI, @worldbank2016].[^wdi] These included **GDP growth** and **domestic credit growth**. Policy-makers may use MPR tools when growth is rising unsustainably. The WDI domestic credit growth variable suffers from high missingness, so we opted to use the BIS measure instead. Additionally, from the WDI, we include **inflation rate** as a control. All World Bank Development Indicators are recorded at the annual level.[^wdilags]
+We examined a number of other economic indicators from the World Bank's Development Indicators [WDI, @worldbank2016].[^wdi] These included **GDP growth**. Policy-makers may use MPR tools when growth is rising rapidly. Additionally, from the WDI, we include **inflation rate** as a control. In models shown in the Online Appendix we include **domestic credit growth**--as in the main text we opt for the BIS measure of credit change as this was available on a quarterly basis. All World Bank Development Indicators are recorded at the annual level.[^wdilags]
 
 ## Monetary policy environment
 
 Policy-makers may turn to macro-prudential tools when they lack the monetary policy tools needed to constrain bubbles. To test this we included annual average standardised **central bank policy interest rates**. This data is from the IMF's International Financial Statistics [@imfifs]. Perhaps countries with already high policy rates--and thus little room to maneuver are more likely to turn to MPR tools. We also used this variable to create a measure of central bank policy interest rate year-on-year percentage change. This variable allows us to examine if the rate of monetary policy change, not just the level, may be important. It could be that macro-prudential and monetary policies are treated as complementary--countries could tighten monetary policy and macro-prudential regulation simultaneously to avoid or quell bubbles. Conversely, these policies may be treated as substitutes. This is an empirical question that we examine below.
+
+The interest rate environment in the United States may also play an important role in macro-prudential risks that policy-makers could be responding to. If interest rates in the United States are low, then investors may search for yield elsewhere causing bubbles. So, we included the quarterly average of the effective US **federal funds rate**. This data is from the Federal Reserve Bank of St. Louis' FRED data base.[^FREDFUNDS]
 
 We also examined whether or not a country's **exchange rate regime** impacted their propensity to use macro-prudential tools. Perhaps having a more fixed exchange rate regime would prevent policy-makers from using monetary policy to tame credit cycles. To examine this, we used the @ilzetzki2010 coarse exchange rate regime measure. Their measure has six categories, with higher values indicating more flexible exchange rate regimes. It is available through 2010. However, we did not find any meaningful results with this measure and do not include it with the estimates below.
 
@@ -81,13 +77,19 @@ Central bank independence should have a more important impact on tightening if t
 
 ## Removal pressures and economic ideology
 
-It may be that politicians who are more accountable to voters with short-time horizons and who benefit from easy credit would be less likely to tighten macro-prudential regulation. To examine this possibility, we used **Unified Democracy Scores** (UDS) from @Pemstein2010 (updated through 2012). UDS scores are found using a Bayesian latent variable model of eleven commonly used measures of democracy. We employ the posterior mean estimates from their estimation model. The variable ranges from about -2.1 to 2.2 where larger scores indicate a higher level of democracy.
+It may be that politicians who are more accountable to voters with short-time horizons and who benefit from easy credit would be less likely to tighten macro-prudential regulation. Conversely, politicians in highly democratic countries may be more likely to make preventative MPR tightening moves as they could suffer at the ballot box if they are viewed as having incompetently handled bubble conditions. To examine these possibilities, we used **Unified Democracy Scores** (UDS) from @Pemstein2010 (updated through 2012). UDS scores are found using a Bayesian latent variable model of eleven commonly used measures of democracy. We employ the posterior mean estimates from their estimation model. The variable ranges from about -2.1 to 2.2 where larger scores indicate a higher level of democracy.
 
 Building on the long established political business cycle literature [e.g. @nordhaus1975political;@drazen2001political] we examine whether electoral accountability not only affects MPR decision-making, but actually creates macro-prudential regulatory electoral cycles. Elected politicians may be more likely to loosen and less likely to tighten macro-prudential regulation if they are close to an **election**. Tightening would slow credit provision to the economy, which voters would dislike. To examine this possibility, we gathered executive election dates from @hyde2012.[^hyde4] These dates are for elections in democracies and autocracies. Not only would politicians loosen or avoid tightening in the immediate election quarter, but also in the quarters leading up to the election. As such, we created a binary executive election variable that was one in the election quarter and the three previous quarters. It was zero otherwise. Continuing with the logic of the policy cycle, we would expect that politicians tighten macro-prudential regulation after elections. They potentially do not have to face voters again for awhile and so can use the post-election period to stabilise the economy (which was possibly destabilised by their pre-election loosening). So, we also include a post-election period variable that was one for the four quarters after an election and zero otherwise.
 
-**Inequality** may influence the implementation of macro-prudential regulation. @rajan2012fault and @calomirisHaber2014 suggest inequality is a root cause of credit booms in democracies, especially in societies with limited redistributive capacity or political will. Faced with such conditions, democratic governments may aim to boost the consumption of lower-income households by manufacturing credit booms through less stringent financial regulation. Indeed, @piketty2013top show that large increases in private debt before the Great Depression and Great Recession were associated with widening income inequality. Politicians may prefer not to intervene and instead permit credit bubbles to inflate in order to sustain their popularity. To assess the influence of inequality, we use several standard measures of the Gini coefficient, devised by @solt2008economic and later updated in @Solt2014. The measures range from zero to one, with higher values indicating higher income inequality. The measures respectively capture the income distribution before and after public redistributive policies are taken into account. If inequality is an important component of the MPR decision-making process then we would expect that the inequality measure that takes redistribution into account would be more strongly associated with a low probability of macro-prudential tightening. It reflects the public's lived level of inequality.
+**Inequality** may influence the implementation of macro-prudential regulation. @rajan2012fault and @calomirisHaber2014 suggest inequality is a root cause of credit booms in democracies, especially in societies with limited capacity or political will to implement redistributive policies. Faced with such conditions, democratic governments may aim to boost the consumption of lower-income households by manufacturing credit booms through less stringent financial regulation. Indeed, @piketty2013top show that large increases in private debt before the Great Depression and Great Recession were associated with widening income inequality.
 
-We use these variables to also assess the extent of public **redistribution** on MPR decisions. To do this we created an indicator of redistribution relative to market inequality (the difference between the market-income and net-income Gini indices divided by market-income and multiplied by 100); that is, the percentage by which market-income inequality is reduced by redistribution. Perhaps countries that respond to inequality pressures with redistributive policies would also be less likely to forestal MPR tightening.
+Politicians may prefer not to intervene and instead permit credit bubbles to inflate in order to sustain their popularity. To assess the influence of inequality, we draw on two standard measures of the Gini index, devised by  @solt2008economic and later updated in @Solt2014. The measures--the market-income Gini index and the net-income Gini index, range from zero to 100, with higher values indicating greater income inequality. The measures respectively capture the income distribution before and after public redistributive policies are taken into account.
+
+<!--If inequality is an important component of the MPR decision-making process then we would expect that the inequality measure that takes redistribution into account would be more strongly associated with a low probability of macro-prudential tightening. It reflects the public's lived level of inequality.-->
+
+We use these measures to also assess the extent to which of public **redistribution** shapes MPR decisions. To do this we
+created an indicator of redistribution relative to market inequality (the difference between the market-income and net-income Gini indices divided by market-income and multiplied by 100); that is, the percentage by which market-income inequality is reduced by redistribution. If regulators in societies with limited redistributive policies are susceptible to political pressure or incentives to accommodate easier credit conditions, then one would expect such countries to exhibit weaker tendencies toward macro-prudential tightening.  Conversely, one might expect such countries to display stronger tendencies toward tightening to the extent to macro-prudential regulators show resolve in leaning against the wind of inequality-induced credit cycles.
+
 
 Politicians' **economic ideology** might play a role in macro-prudential decisions. To test this we include the government executive's economic policy orientation from the Database of Political Institutions [DPI, @DPI2001 updated through 2012]. It is one for right-leaning governments, two for centre-leaning, and three for left-leaning. We never found any support for this variable, so results from models using it are not shown below.
 
@@ -159,34 +161,6 @@ While we may not have found evidence that electoral cycles influence MPR tighten
 
 There is some evidence that inequality and redistribution change the probability of tightening, though not in the way we initially expected. Based on the previous literature, we anticipated that countries with higher inequality, especially even after redistribution, would be less likely to tighten in order to not alienate less advantaged supporters by reducing their access to credit. However, we found that countries with higher inequality (using both the market and post-redistribution measures, though only the latter is included in the model shown) are more likely to tighten. Similarly, countries with less redistribution are slightly more likely to tighten. Countries such as Brazil, Colombia, Peru, and Thailand all had Gini scores above 45 (on both measures) and tightened over multiple quarters. Almost all of these countries tightened by increasing reserve requirements. One possible explanation for these results that contradict our expectations, is that political pressures to not tighten in unequal societies make a country more likely to get into situations where they need to tighten. These countries also seem to tighten in such a way--increasing reserve requirements--that does not immediately impact borrowers. Though presumably such policies would tighten credit availability over the medium-term.
 
-\begin{figure}
-    \caption{Variable Permutation Importance for Classifying Macro-prudential Policy Loosening}
-    \label{imp_loosen}
-    \begin{center}
-        \includegraphics{figures/loosen_imp.pdf}
-    \end{center}
-
-    {\scriptsize{Bars coloured by whether or not they have positive variable importance.}}
-
-\end{figure}
-
-\begin{figure}
-    \caption{Partial Dependence Plot for Macro-prudential Regulatory Policy Loosening}
-    \label{partial_loosen}
-    \begin{center}
-        \includegraphics{figures/patial_loosen.pdf}
-    \end{center}
-
-    {\scriptsize{Variables with very low variable permutation importance are not shown. The "fixed effects" country variable is not shown. Note that predictions are for policy change to be made per quarter.}}
-
-\end{figure}
-
-## MPR loosening: preliminary results
-
-It is important to note a few data caveats about macro-prudential loosening before discussing our results, which are shown in figures \ref{imp_loosen} and \ref{partial_loosen}. Chiefly, many instances of MPR loosening occurred in the most recent period of our sample as countries began to wind down their responses to the Global Financial Crisis. However, we lack data on many of our covariates after 2011, so our effective sample of MPR loosening decisions is very limited.
-
-As a sanity check, we can see that countries that have tightened macro-prudential regulation more in the past are more likely to loosen. They have more opportunities to loosen. Quickly contracting credit also, as we expected, increases the probability of loosening. Interestingly, Brazil loosened MPR when it had contracting credit and rapidly increasing housing prices. This case is driving the (unexpected) finding that increasing house prices increase the probability of loosening. However, Brazil loosened reserve requirements--a policy move responding to tightening credit conditions--rather than lending standards, for example, which would have been more directly targeted at housing prices. The high probability of loosening when there is already high growth is being driven exclusively by Singapore, which in 2010 had GDP growth over 15 percent and also loosened lending standards. It is unclear what generalisable conclusions to draw from this one data point. Overall, given the sparsity of data for MPR loosening, we should be cautious of generalising conclusions from these findings.
-
 # Conclusions
 
 In this paper we have found a strong tendency for countries to make macro-prudential regulation in largely expected ways in response to economic conditions--particularly rapid GDP growth, housing prices and credit provision changes. Policy-makers also appear to tighten MPR more when monetary policy space is constrained by already high policy interest rates. Additionally, MPR seems to sometimes be used to complement interest rate increases.  
@@ -200,12 +174,12 @@ It is nonetheless very important to note that these findings are based on a rela
 
 \pagebreak
 \renewcommand{\thepage}{A-\arabic{page}}\setcounter{page}{1}
-\renewcommand{\thesection}{Appendix \arabic{section}}\setcounter{section}{0}
+\renewcommand{\thesection}{Online Appendix \arabic{section}}\setcounter{section}{0}
 \renewcommand{\thetable}{A-\arabic{table}}\setcounter{table}{0}
 \renewcommand{\thefigure}{A-\arabic{figure}}\setcounter{figure}{0}
 \clearpage
 
-# Online Appendix: additional descriptive statistics
+# Additional descriptive statistics
 
 \begin{figure}[H]
     \caption{Cumulative Sum of MPR Tightening and Loosening (whole sample)}
@@ -239,7 +213,7 @@ It is nonetheless very important to note that these findings are based on a rela
 \clearpage
 
 
-# Online Appendix: minimal depth importance measure
+# Minimal depth importance measure
 
 Figures \ref{depth_tighten} and \ref{depth_loosen} show the minimal depths for each variable included in our two random forest models as an alternative to permutation importance. The assumption behind these plots is that variables have a higher impact on predicting MPR tightening if they more frequently split nodes closer to the "trunk" of the tree, i.e. the root node [@Ehrlinger2015, 11]. Lower minimum depths indicate that a variable is more important for predicting the MPR choice. Using the threshold rule developed by @Ishwaran2010, minimum depth values below the mean minimum depth across the variables indicate variables that are important for predicting MPR choices. This threshold is represented in figures \ref{depth_tighten} and \ref{depth_loosen} by the dashed vertical line.
 
@@ -265,11 +239,11 @@ Figures \ref{depth_tighten} and \ref{depth_loosen} show the minimal depths for e
 
 \end{figure}
 
-# Online Appendix: logistic regressions
+# Logistic regressions: Garbage cans
 
-We also ran our models with classical logistic regression and logistic regression with the minimally informative priors suggested by @Gelman2008.[^bayesglm] The results from these analyses are shown in tables \ref{ordinary_logistic_mpr} and \ref{bayes_logistic_mpr}. We can see that the classical logistic regressions produce highly unlikely coefficient estimates that are very unstable, depending highly on the model specification (not shown). Remember that in logistic regression a coefficient change of five moves a probability from 0.01 to 0.5 and likewise from 0.5 to 0.99. The central bank independence coefficient for the model predicting macro-prudential tightening is improbably large, especially given the random forest findings. The estimated intercepts are also non-sensicaly large. Even when using minimally informative priors  to tame the coefficient estimates, we still end up with non-sensical intercepts. Many of the coefficients (e.g. GDP growth and year) are in highly unlikely directions given our theoretical priors and the random forest findings.
+We also ran our models with classical logistic regression and logistic regression with the minimally informative priors suggested by @Gelman2008.[^bayesglm] The results from these analyses are shown in tables \ref{ordinary_logistic_mpr} and \ref{bayes_logistic_mpr}. We can see that the classical logistic regressions with garbage can model specifications--i.e. including all of the variables--produces highly unlikely coefficient estimates that are very unstable, depending highly on the model specification (not shown). Remember that in logistic regression a coefficient change of five moves a probability from 0.01 to 0.5 and likewise from 0.5 to 0.99. The central bank independence coefficient for the model predicting macro-prudential tightening is improbably large, especially given the random forest findings. The estimated intercepts are also nonsensically large. Even when using minimally informative priors to tame the coefficient estimates, we still end up with non-sensical intercepts. Many of the coefficients (e.g. GDP growth and year) are in highly unlikely directions given our theoretical priors and the random forest findings.
 
-All of these issues are symptomatic of estimating logistic regressions on rare events with models that include many highly correlated predictors. Thus our need to look for alternative modeling strategies, such as random forests, for examining the relative importance of relatively many economic and political factors.
+All of these issues are symptomatic of estimating logistic regressions on rare events with models that include many highly correlated predictors. Thus our need to look for alternative modelling strategies, such as random forests, for examining the relative importance of relatively many economic and political factors.
 
 \begin{table}
     \caption{Logistic Regression Estimates of Macro-prudential Tightening and Loosening}
@@ -278,7 +252,7 @@ All of these issues are symptomatic of estimating logistic regressions on rare e
         \input{tables/garbage_can_ordinary_logit.tex}
     \end{center}
 
-{\scriptsize{Country fixed effect estimates not shown.}}
+{\scriptsize{Country and year fixed effect estimates not shown.}}
 
 \end{table}
 
@@ -288,13 +262,80 @@ All of these issues are symptomatic of estimating logistic regressions on rare e
     \begin{center}
         \input{tables/garbage_can_bayes_logit.tex}
     \end{center}
-{\scriptsize{Country fixed effect estimates not shown.}}
+{\scriptsize{Country and year fixed effect estimates not shown.}}
 
 \end{table}
 
-\clearpage
+# Logistic stepwise variable inclusion
 
-# Online Appendix: Exploring possible interactions
+Following @achen2005 we also ran the logistic regressions with minimally informative priors for MPR tightening by stepwise including the variables. See tables \ref{bayes_logistic_step_full} and \ref{bayes_logistic_step_bis}. Results tended to be similar in general direction to the random forest findings. For example, GDP growth was consistently statistically significant and positive, while the election timing variables were not statistically significant. The lagged cumulative sum of a country's tightening measures was conversely found to be negative whereas in the random forests having tightened more was much more likely to predict further tightening. This may be related to the non-linearity of the possible effect. Similarly BIS housing price change was not found to be significant possibly due to a nonlinear relationship with MPR tightening. In a models where the effect of housing price change is modeled with a second order polynomial (not shown) the effect was significant at the 10 percent level.
+
+Interestingly, in models that did not include the variables from the Bank of International Settlements (Table \ref{bayes_logistic_step_full}) central bank independence was consistently positive and statistically significant, i.e. having more central bank independence was more likely to lead to tightening. However, when we include the housing price change and credit change variables from the BIS (Table \ref{bayes_logistic_step_bis}), central bank independence--and other variables like GDP Growth--is no longer statistically significant. Do to listwise deletion of missing values, including the BIS variables shrinks our sample considerably from over 1,000 country-quarters between approximately 500 to 700. To examine if the missing data may be driving the statistically insignificant result, we reran the models without the BIS variables, but subsetting the sample to include only observations where there was no missing data for them. This also produces a statistically insignificant CBI estimate (see model B7 in Table \ref{bayes_logistic_step_bis}). Note that we also found using the annual WDI domestic credit change variable (model A7 Table \ref{bayes_logistic_step_full}) that CBI is significant with this measure of credit provision change. However, these results are not consistent with a random forests model excluding the BIS variables and including domestic credit provision change from the WDI (Figure \ref{var_imp_tighten_no_bis}). More work is needed to robustly pin down the effect of CBI.
+
+\begin{table}
+    \caption{Stepwise Variable Included Logistic Regression (with minimally informative priors) Estimates of Macro-prudential Tightening}
+    \label{bayes_logistic_step_full}
+    \begin{center}
+        \input{tables/stepwise_bayeslogit_no_bis.tex}
+    \end{center}
+{\scriptsize{Country and year fixed effect estimates not shown.}}
+
+\end{table}
+
+\begin{table}
+    \caption{Stepwise Variable Included Logistic Regression (with minimally informative priors) Estimates of Macro-prudential Tightening--No BIS variables included}
+    \label{bayes_logistic_step_bis}
+    \begin{center}
+        \input{tables/stepwise_bayeslogit_bis_included.tex}
+    \end{center}
+{\scriptsize{Country and year fixed effect estimates not shown. \\
+    Model B7 includes only observations for which there is no missing data for the BIS housing price and credit provision change variables.
+}}
+
+\end{table}
+
+\begin{figure}
+    \caption{Minimal Depth For Trees Classifying Macro-prudential Policy Tightening (no BIS variables and using WDI domestic credit change)}
+    \label{var_imp_tighten_no_bis}
+    \begin{center}
+        \includegraphics{figures/tighten_md_no_bis.pdf}
+    \end{center}
+
+    {\scriptsize{The dashed vertical line indicates mean minimum depth across the variables. Minimum depths below the mean depth are considered to be important in forest prediction.}}
+
+\end{figure}
+
+
+
+\begin{figure}
+    \caption{Variable Permutation Importance for Classifying Macro-prudential Policy Loosening}
+    \label{imp_loosen}
+    \begin{center}
+        \includegraphics{figures/loosen_imp.pdf}
+    \end{center}
+
+    {\scriptsize{Bars coloured by whether or not they have positive variable importance.}}
+
+\end{figure}
+
+\begin{figure}
+    \caption{Partial Dependence Plot for Macro-prudential Regulatory Policy Loosening}
+    \label{partial_loosen}
+    \begin{center}
+        \includegraphics{figures/patial_loosen.pdf}
+    \end{center}
+
+    {\scriptsize{Variables with very low variable permutation importance are not shown. The "fixed effects" country variable is not shown. Note that predictions are for policy change to be made per quarter.}}
+
+\end{figure}
+
+# MPR loosening--preliminary results
+
+It is important to note a few data caveats about macro-prudential loosening before discussing our results, which are shown in figures \ref{imp_loosen} and \ref{partial_loosen}. Chiefly, many instances of MPR loosening occurred in the most recent period of our sample as countries began to wind down their responses to the Global Financial Crisis. However, we lack data on many of our covariates after 2011, so our effective sample of MPR loosening decisions is very limited.
+
+As a sanity check, we can see that countries that have tightened macro-prudential regulation more in the past are more likely to loosen. They have more opportunities to loosen. Quickly contracting credit also, as we expected, increases the probability of loosening. Interestingly, Brazil loosened MPR when it had contracting credit and rapidly increasing housing prices. This case is driving the (unexpected) finding that increasing house prices increase the probability of loosening. However, Brazil loosened reserve requirements--a policy move responding to tightening credit conditions--rather than lending standards, for example, which would have been more directly targeted at housing prices. The high probability of loosening when there is already high growth is being driven exclusively by Singapore, which in 2010 had GDP growth over 15 percent and also loosened lending standards. It is unclear what generalisable conclusions to draw from this one data point. Overall, given the sparsity of data for MPR loosening, we should be cautious of generalising conclusions from these findings.
+
+# Exploring possible interactions
 
 One advantage of random forests is that we can explore many possible interactions between our predictors [@jones2015, 18-21]. To test for possible interactions in our random forest model we used a method that builds on the minimal depth approach [@Ishwaran2010]. We constructed a $p \times p$ matrix, where $p$ is the number of predictors. The diagonal is the (normalised) minimal depth relative to the root node. Each off diagonal term is the minimal depth term relative to the diagonal in that row. Small off diagonal term values indicate that the term splits close to the diagonal term [@Ehrlinger2015, 17-19], i.e. that there is an interaction between the two variables.
 
@@ -330,6 +371,8 @@ We visualise these matrices in figures \ref{interact_tighten} and \ref{interact_
 [^wdi]: The indicator IDs are NY.GDP.MKTP.KD.ZG, FS.AST.DOMS.GD.ZS, and FP.CPI.TOTL.ZG, respectively. Note that we created the domestic credit growth variable by finding the year-on-year percentage change in domestic credit as a percentage of GDP.
 
 [^wdilags]: We also examined models with one year lags of these variables. In general these lags were not statistically significant.
+
+[^FREDFUNDS]: The FRED indicator ID is FEDFUNDS. Accessed April 2016.
 
 [^cuminclude]: Only results from regressions including the variable are show.
 
