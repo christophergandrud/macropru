@@ -16,6 +16,9 @@ library(stringr)
 library(psData)
 library(WDI)
 library(foreign)
+library(R.cache)
+library(imfr)
+library(zoo)
 library(fredr) # if not installed use devtools::install_github('christophergandrud/fredr')
 
 # Set working directory
@@ -31,7 +34,11 @@ boe$country <- countrycode(boe$countrycode, origin = "iso3c",
 boe$year_quarter <- sprintf("%s.%s", boe$year, boe$quarter) %>% 
     as.numeric
 
-boe <- MoveFront(boe, c("country", "countrycode", "year_quarter", "quarter"))
+boe$iso2c <- countrycode(boe$country, origin = 'country.name',
+                         destination = 'iso2c')
+
+boe <- MoveFront(boe, c("country", "iso2c", "countrycode", "year_quarter", 
+                        "quarter"))
 
 # Macropru governance
 ## p. 16 https://www.imf.org/external/pubs/ft/wp/2013/wp13166.pdf
@@ -193,14 +200,15 @@ for (i in 2011:2014) cbi <- extender(cbi, year_original = 2010, year_new = i)
 # WDI -------------
 wdi <- WDI(indicator = c('NY.GDP.MKTP.KD.ZG', 'FP.CPI.TOTL.ZG', 'SI.POV.GINI',
                          'FS.AST.DOMS.GD.ZS', 'NY.GDP.PCAP.PP.KD',
-                         'FB.BNK.CAPA.ZS'), 
+                         'FB.BNK.CAPA.ZS', 'NY.GDP.MKTP.KD'), 
            start = 1990, end = 2015)
 wdi <- wdi %>% rename(gdp_growth = NY.GDP.MKTP.KD.ZG) %>% 
     rename(inflation = FP.CPI.TOTL.ZG) %>%
     rename(gini = SI.POV.GINI) %>% 
     rename(domestic_credit = FS.AST.DOMS.GD.ZS) %>%
     rename(gdp_per_capita = NY.GDP.PCAP.PP.KD) %>%
-    rename(capital_to_assets = FB.BNK.CAPA.ZS)
+    rename(capital_to_assets = FB.BNK.CAPA.ZS) %>%
+    rename(gdp_market_constant_usd = NY.GDP.MKTP.KD)
 
 wdi$country <- countrycode(wdi$iso2c, origin = 'iso2c',
                            destination = 'country.name')
@@ -331,13 +339,51 @@ ex_regime$country <- countrycode(ex_regime$country, origin = 'country.name',
 ex_regime <- ex_regime %>% DropNA(c('country', 'year', 'ex_regime'))
 
 # US Fed Funds Rate (from FRED database) --------------
-fed_funds <- fred_loop(single_symbol = 'FEDFUNDS', var_name = 'us_fed_funds')
+fed_funds <- fred_loop(single_symbol = 'FEDFUNDS',  var_name = 'us_fed_funds')
 
 # Find quarter averages
 fed_funds$year_quarter <- quarter(fed_funds$date, with_year = TRUE)
 
 fed_funds <- fed_funds %>% group_by(year_quarter) %>%
                 summarise(us_fed_funds = mean(us_fed_funds))
+
+# IMF BOP: Capital Account, Capital transfers, Net, US Dollars -----------------
+# ID: BKT_BP6_USD
+boe_iso2c <- unique(boe$iso2c)
+
+cap_account <- imf_data(database_id = 'BOP', indicator = 'BKT_BP6_USD',
+                        country = boe_iso2c,
+                 freq = 'Q', start = 1995, end = 2015)
+
+cap_account <- cap_account %>% rename(capital_transfers_net = BKT_BP6_USD) 
+cap_account$year_quarter <- gsub('-0', '.', cap_account$year_quarter) %>% 
+                    as.numeric
+cap_account$country <- countrycode(cap_account$iso2c, origin = 'iso2c',
+                                   destination = 'country.name')
+cap_account$year <- as.integer(cap_account$year_quarter)
+
+# Find capital transfer % of (2005) GDP change
+gdp_2005 <- wdi %>% filter(year == 2005) %>% 
+                select(country, gdp_market_constant_usd)
+
+cap_account <- merge(cap_account, gdp_2005, by = c('country'))
+
+cap_account$cap_transfers_gdp <- (cap_account$capital_transfers_net / 
+                                cap_account$gdp_market_constant_usd) * 100
+# Find percentage change
+cap_account <- change(cap_account, Var = 'cap_transfers_gdp', 
+                      GroupVar = 'iso2c', TimeVar = 'year_quarter',
+                      NewVar = 'cap_trans_perc_change',
+                      slideBy = -4)
+
+cap_account <- DropNA(cap_account, 'cap_trans_perc_change')
+cap_account$cap_trans_perc_change_ma <- ave(
+    cap_account_no_na$cap_trans_perc_change, as.factor(cap_account_no_na$iso2c), 
+    FUN = function(x) rollmean(x, k = 4, fill = NA)) 
+
+cap_account <- cap_account %>% select(country, year_quarter, cap_transfers_gdp,
+                                      cap_trans_perc_change,
+                                      cap_trans_perc_change_ma)
 
 # Combine ------
 comb <- merge(boe, elections_sub, by = c("country", "year_quarter"), 
@@ -358,6 +404,8 @@ comb <- merge(comb, pol_constraints, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, ifs, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, ex_regime, by = c('country', 'year'), all.x = T)
 comb <- merge(comb, fed_funds, by = c('year_quarter'), all.x = T)
+comb <- merge(comb, cap_account, by = c('country', 'year_quarter'), all.x = T)
+
 comb <- comb %>% arrange(country, year_quarter)
 FindDups(comb, c('country', 'year_quarter'))
 

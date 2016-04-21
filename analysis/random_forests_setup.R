@@ -32,7 +32,8 @@ keepers <- c('any_tighten', 'lag_cumsum_any_tighten',
              'executive_election_4qt', 'executive_election_4qt_after',
              'cb_policy_rate',
              'cb_policy_rate_change', 'gini_net',
-             'redist_absolute', 'uds_mean', 'us_fed_funds')
+             'redist_absolute', 'uds_mean', 'us_fed_funds'
+             )
 
 keeper_labels <- c('Any MPR Tightening', 'Cum. Tight. (lag)', 
                    'GDP Growth', 'GDP/Capita', 'Inflation',
