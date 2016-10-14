@@ -476,6 +476,10 @@ comb$year <- comb$year_quarter %>% round(digits = 0) %>% as.integer
 
 comb <- comb %>% dplyr::select(-standardized_country, -countryname)
 comb <- comb %>% DropNA('countrycode') # Keep only observations in the BoE data
+      
+# Make sure ISO 2-letter country code is complete
+comb$iso2c <- countrycode(comb$country, origin = "country.name",
+                          destination = "iso2c")
 
 # Export -----------
 export(comb, file = 'data/main_combined.csv')
